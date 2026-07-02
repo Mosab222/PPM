@@ -1,0 +1,292 @@
+{
+  "app": {
+    "name": "PPM",
+    "tagline": "Planned Preventive Maintenance"
+  },
+  "nav": {
+    "login": "Log in",
+    "dashboard": "Dashboard",
+    "myHistory": "My history"
+  },
+  "language": {
+    "switchTo": "العربية",
+    "label": "Language"
+  },
+  "equipment": {
+    "notFound": "Equipment not found",
+    "notFoundBody": "We couldn't find any equipment matching this code. Please check the QR code and try again.",
+    "code": "Equipment code",
+    "subtype": "Subtype",
+    "building": "Building",
+    "floor": "Floor",
+    "location": "Location",
+    "status": "Status",
+    "weight": "Weight",
+    "lastMaintenanceDate": "Last maintenance",
+    "nextMaintenanceDate": "Next maintenance due",
+    "details": "Equipment details",
+    "historyTitle": "Maintenance history",
+    "historyEmpty": "No maintenance has been recorded for this equipment yet.",
+    "executeMaintenance": "Execute maintenance",
+    "table": {
+      "date": "Date",
+      "time": "Time",
+      "technician": "Technician",
+      "result": "Result",
+      "photos": "Photos"
+    },
+    "result": {
+      "passed": "Passed",
+      "needs_attention": "Needs Attention",
+      "failed": "Failed"
+    },
+    "status_value": {
+      "compliant": "Compliant",
+      "due": "Due",
+      "overdue": "Overdue",
+      "needs_attention": "Needs Attention",
+      "decommissioned": "Decommissioned"
+    },
+    "banner": {
+      "passed": "Maintenance recorded successfully — all checks passed.",
+      "needsAttention": "Maintenance recorded — {count} issue(s) need attention."
+    }
+  },
+  "footer": {
+    "publicNotice": "Public equipment record — no login required to view."
+  },
+  "auth": {
+    "title": "Technician login",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Log in",
+    "submitting": "Logging in…",
+    "logout": "Log out",
+    "loggedInAs": "Signed in as",
+    "inactiveAccount": "Your account is inactive. Please contact your administrator.",
+    "errors": {
+      "missingFields": "Please enter your email and password.",
+      "invalidCredentials": "Invalid email or password."
+    }
+  },
+  "checklist": {
+    "title": "Maintenance checklist",
+    "noTemplate": "No checklist template is configured for this equipment yet.",
+    "backToEquipment": "Back to equipment",
+    "yes": "Yes",
+    "no": "No",
+    "required": "Required",
+    "critical": "Critical",
+    "notePlaceholder": "Add a note (optional)",
+    "photoPending": "Use the photo section below to attach evidence for this item.",
+    "submit": "Submit maintenance",
+    "submitting": "Submitting…",
+    "validationError": "Please answer all required items before submitting.",
+    "submitError": "Something went wrong while submitting. Please try again.",
+    "unauthorized": "You must be logged in as an active technician to submit maintenance.",
+    "numberPlaceholder": "Enter value",
+    "didItPass": "Did this pass?",
+    "photo": {
+      "title": "Photos",
+      "countLabel": "{count}/{max}",
+      "add": "Add",
+      "uploading": "Uploading…",
+      "remove": "Remove photo",
+      "uploadError": "Couldn't upload photo. Please try again.",
+      "removeError": "Couldn't remove photo. Please try again."
+    }
+  },
+  "admin": {
+    "notAuthorized": "You don't have access to this page. Admin role required.",
+    "nav": {
+      "dashboard": "Dashboard",
+      "equipment": "Equipment",
+      "users": "Users",
+      "reports": "Reports"
+    },
+    "reports": {
+      "title": "Reports",
+      "filters": {
+        "equipmentSearch": "Equipment code",
+        "equipmentSearchPlaceholder": "Search by code",
+        "building": "Building",
+        "subtype": "Subtype",
+        "status": "Status",
+        "technician": "Technician",
+        "fromDate": "From date",
+        "toDate": "To date",
+        "allBuildings": "All buildings",
+        "allSubtypes": "All subtypes",
+        "allStatuses": "All statuses",
+        "allTechnicians": "All technicians",
+        "apply": "Filter",
+        "reset": "Reset"
+      },
+      "table": {
+        "code": "Equipment code",
+        "building": "Building",
+        "floor": "Floor",
+        "location": "Location",
+        "subtype": "Subtype",
+        "date": "Date",
+        "time": "Time",
+        "technician": "Technician",
+        "result": "Result",
+        "issues": "Issues found"
+      },
+      "empty": "No maintenance records match the current filters.",
+      "downloadExcel": "Download Excel",
+      "resultCount": "{count} records"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "cards": {
+        "total": "Total equipment",
+        "compliant": "Compliant",
+        "dueSoon": "Due soon",
+        "overdue": "Overdue"
+      },
+      "chart": {
+        "title": "Maintenance compliance",
+        "byFloorIn": "Floors in {building}",
+        "backToBuildings": "← Back to all buildings",
+        "done": "Done",
+        "scheduled": "Scheduled",
+        "overdue": "Overdue",
+        "empty": "No equipment matches the current filters."
+      },
+      "filters": {
+        "building": "Building",
+        "subtype": "Subtype",
+        "status": "Status",
+        "fromDate": "Due from",
+        "toDate": "Due to",
+        "allBuildings": "All buildings",
+        "allSubtypes": "All subtypes",
+        "allStatuses": "All statuses",
+        "apply": "Filter",
+        "reset": "Reset"
+      }
+    },
+    "users": {
+      "listTitle": "Users",
+      "addNew": "Add user",
+      "search": "Search",
+      "searchPlaceholder": "Search by name or email",
+      "filterRole": "Role",
+      "allRoles": "All roles",
+      "applyFilters": "Filter",
+      "active": "Active",
+      "inactive": "Inactive",
+      "empty": "No users found.",
+      "role_value": {
+        "admin": "Admin",
+        "technician": "Technician"
+      },
+      "new": {
+        "title": "Add user",
+        "helpText": "First create the account in Supabase Dashboard → Authentication → Users, then paste its User UID below to link it to a profile.",
+        "authUserId": "Auth User ID (UUID)",
+        "email": "Email",
+        "fullName": "Full name",
+        "arabicName": "Arabic name",
+        "role": "Role",
+        "isActive": "Active",
+        "submit": "Link user",
+        "submitting": "Linking…",
+        "errors": {
+          "unauthorized": "You don't have permission to add users.",
+          "missingFields": "Please fill in the User ID, email, and full name.",
+          "invalidId": "Enter a valid User UID from Supabase Authentication.",
+          "duplicateUser": "A profile is already linked to this User ID.",
+          "authUserNotFound": "No Supabase Auth user found with that ID. Create it in the Dashboard first, then try again.",
+          "submitError": "Something went wrong. Please try again."
+        }
+      },
+      "table": {
+        "fullName": "Full name",
+        "arabicName": "Arabic name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "edit": "Edit"
+      },
+      "edit": {
+        "title": "Edit user",
+        "email": "Email",
+        "fullName": "Full name",
+        "arabicName": "Arabic name",
+        "role": "Role",
+        "isActive": "Active",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "saved": "Changes saved.",
+        "back": "Back to users",
+        "errors": {
+          "unauthorized": "You don't have permission to edit users.",
+          "submitError": "Something went wrong. Please try again.",
+          "selfLockout": "You can't remove your own admin role or deactivate your own account."
+        }
+      }
+    },
+    "equipment": {
+      "listTitle": "Equipment",
+      "addNew": "Add equipment",
+      "search": "Search",
+      "searchPlaceholder": "Search by code or location",
+      "filterBuilding": "Building",
+      "filterSubtype": "Subtype",
+      "filterStatus": "Status",
+      "allBuildings": "All buildings",
+      "allSubtypes": "All subtypes",
+      "allStatuses": "All statuses",
+      "applyFilters": "Filter",
+      "empty": "No equipment found.",
+      "table": {
+        "code": "Code",
+        "type": "Type",
+        "building": "Building",
+        "floor": "Floor",
+        "location": "Location",
+        "status": "Status",
+        "nextMaintenance": "Next maintenance",
+        "view": "View"
+      },
+      "form": {
+        "title": "Add equipment",
+        "type": "Equipment type",
+        "subtype": "Subtype",
+        "selectType": "Select a type",
+        "selectSubtype": "Select a subtype",
+        "building": "Building code",
+        "floor": "Floor",
+        "location": "Location",
+        "weight": "Weight (kg)",
+        "frequency": "Maintenance frequency",
+        "submit": "Create equipment",
+        "submitting": "Creating…",
+        "frequency_value": {
+          "weekly": "Weekly",
+          "monthly": "Monthly",
+          "quarterly": "Quarterly",
+          "semiannual": "Semi-annual",
+          "yearly": "Yearly"
+        },
+        "errors": {
+          "unauthorized": "You don't have permission to create equipment.",
+          "invalidSegment": "Building, floor, and location must contain only letters and numbers (no spaces or hyphens).",
+          "submitError": "Something went wrong. Please try again."
+        }
+      },
+      "success": {
+        "title": "Equipment created",
+        "codeLabel": "Equipment code",
+        "qrTitle": "QR label",
+        "download": "Download QR",
+        "print": "Print label",
+        "addAnother": "Add another",
+        "viewList": "View equipment list"
+      }
+    }
+  }
+}

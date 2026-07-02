@@ -1,0 +1,292 @@
+{
+  "app": {
+    "name": "PPM",
+    "tagline": "الصيانة الوقائية المخططة"
+  },
+  "nav": {
+    "login": "تسجيل الدخول",
+    "dashboard": "لوحة التحكم",
+    "myHistory": "سجلي"
+  },
+  "language": {
+    "switchTo": "English",
+    "label": "اللغة"
+  },
+  "equipment": {
+    "notFound": "لم يتم العثور على المعدة",
+    "notFoundBody": "لم نتمكن من العثور على أي معدة مطابقة لهذا الرمز. يرجى التحقق من رمز الاستجابة السريعة والمحاولة مرة أخرى.",
+    "code": "رمز المعدة",
+    "subtype": "النوع الفرعي",
+    "building": "المبنى",
+    "floor": "الطابق",
+    "location": "الموقع",
+    "status": "الحالة",
+    "weight": "الوزن",
+    "lastMaintenanceDate": "آخر صيانة",
+    "nextMaintenanceDate": "موعد الصيانة القادم",
+    "details": "بيانات المعدة",
+    "historyTitle": "سجل الصيانة",
+    "historyEmpty": "لم يتم تسجيل أي أعمال صيانة لهذه المعدة حتى الآن.",
+    "executeMaintenance": "تنفيذ الصيانة",
+    "table": {
+      "date": "التاريخ",
+      "time": "الوقت",
+      "technician": "الفني",
+      "result": "النتيجة",
+      "photos": "الصور"
+    },
+    "result": {
+      "passed": "مطابقة",
+      "needs_attention": "تحتاج انتباه",
+      "failed": "غير مطابقة"
+    },
+    "status_value": {
+      "compliant": "متوافقة",
+      "due": "مستحقة",
+      "overdue": "متأخرة",
+      "needs_attention": "تحتاج انتباه",
+      "decommissioned": "مسحوبة"
+    },
+    "banner": {
+      "passed": "تم تسجيل الصيانة بنجاح — جميع الفحوصات ناجحة.",
+      "needsAttention": "تم تسجيل الصيانة — يوجد {count} مشكلة تحتاج متابعة."
+    }
+  },
+  "footer": {
+    "publicNotice": "سجل معدة عام — لا يتطلب تسجيل الدخول للعرض."
+  },
+  "auth": {
+    "title": "تسجيل دخول الفني",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "submit": "تسجيل الدخول",
+    "submitting": "جارٍ تسجيل الدخول…",
+    "logout": "تسجيل الخروج",
+    "loggedInAs": "تم تسجيل الدخول باسم",
+    "inactiveAccount": "حسابك غير نشط. يرجى التواصل مع المسؤول.",
+    "errors": {
+      "missingFields": "يرجى إدخال البريد الإلكتروني وكلمة المرور.",
+      "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+    }
+  },
+  "checklist": {
+    "title": "قائمة فحص الصيانة",
+    "noTemplate": "لا توجد قائمة فحص معدة لهذا النوع من المعدات بعد.",
+    "backToEquipment": "الرجوع إلى المعدة",
+    "yes": "نعم",
+    "no": "لا",
+    "required": "مطلوب",
+    "critical": "حرج",
+    "notePlaceholder": "أضف ملاحظة (اختياري)",
+    "photoPending": "استخدم قسم الصور أدناه لإرفاق دليل لهذا البند.",
+    "submit": "إرسال الصيانة",
+    "submitting": "جارٍ الإرسال…",
+    "validationError": "يرجى الإجابة على جميع العناصر المطلوبة قبل الإرسال.",
+    "submitError": "حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.",
+    "unauthorized": "يجب تسجيل الدخول كفني نشط لإرسال بيانات الصيانة.",
+    "numberPlaceholder": "أدخل القيمة",
+    "didItPass": "هل اجتاز هذا البند؟",
+    "photo": {
+      "title": "الصور",
+      "countLabel": "{count}/{max}",
+      "add": "إضافة",
+      "uploading": "جارٍ الرفع…",
+      "remove": "إزالة الصورة",
+      "uploadError": "تعذر رفع الصورة. يرجى المحاولة مرة أخرى.",
+      "removeError": "تعذر إزالة الصورة. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "admin": {
+    "notAuthorized": "لا تملك صلاحية الوصول إلى هذه الصفحة. يتطلب دور المسؤول.",
+    "nav": {
+      "dashboard": "لوحة التحكم",
+      "equipment": "المعدات",
+      "users": "المستخدمون",
+      "reports": "التقارير"
+    },
+    "reports": {
+      "title": "التقارير",
+      "filters": {
+        "equipmentSearch": "رمز المعدة",
+        "equipmentSearchPlaceholder": "ابحث بالرمز",
+        "building": "المبنى",
+        "subtype": "النوع الفرعي",
+        "status": "الحالة",
+        "technician": "الفني",
+        "fromDate": "من تاريخ",
+        "toDate": "إلى تاريخ",
+        "allBuildings": "كل المباني",
+        "allSubtypes": "كل الأنواع الفرعية",
+        "allStatuses": "كل الحالات",
+        "allTechnicians": "كل الفنيين",
+        "apply": "تصفية",
+        "reset": "إعادة تعيين"
+      },
+      "table": {
+        "code": "رمز المعدة",
+        "building": "المبنى",
+        "floor": "الطابق",
+        "location": "الموقع",
+        "subtype": "النوع الفرعي",
+        "date": "التاريخ",
+        "time": "الوقت",
+        "technician": "الفني",
+        "result": "النتيجة",
+        "issues": "المشاكل المسجلة"
+      },
+      "empty": "لا توجد سجلات صيانة مطابقة للمرشحات الحالية.",
+      "downloadExcel": "تحميل ملف إكسل",
+      "resultCount": "{count} سجل"
+    },
+    "dashboard": {
+      "title": "لوحة التحكم",
+      "cards": {
+        "total": "إجمالي المعدات",
+        "compliant": "متوافقة",
+        "dueSoon": "مستحقة قريبًا",
+        "overdue": "متأخرة"
+      },
+      "chart": {
+        "title": "الالتزام بالصيانة",
+        "byFloorIn": "الطوابق في {building}",
+        "backToBuildings": "→ الرجوع إلى كل المباني",
+        "done": "منجز",
+        "scheduled": "مجدول",
+        "overdue": "متأخر",
+        "empty": "لا توجد معدات مطابقة للمرشحات الحالية."
+      },
+      "filters": {
+        "building": "المبنى",
+        "subtype": "النوع الفرعي",
+        "status": "الحالة",
+        "fromDate": "مستحقة من",
+        "toDate": "مستحقة إلى",
+        "allBuildings": "كل المباني",
+        "allSubtypes": "كل الأنواع الفرعية",
+        "allStatuses": "كل الحالات",
+        "apply": "تصفية",
+        "reset": "إعادة تعيين"
+      }
+    },
+    "users": {
+      "listTitle": "المستخدمون",
+      "addNew": "إضافة مستخدم",
+      "search": "بحث",
+      "searchPlaceholder": "ابحث بالاسم أو البريد الإلكتروني",
+      "filterRole": "الدور",
+      "allRoles": "كل الأدوار",
+      "applyFilters": "تصفية",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "empty": "لم يتم العثور على مستخدمين.",
+      "role_value": {
+        "admin": "مسؤول",
+        "technician": "فني"
+      },
+      "new": {
+        "title": "إضافة مستخدم",
+        "helpText": "أولاً، أنشئ الحساب من لوحة Supabase ← Authentication ← Users، ثم الصق معرّف المستخدم (UID) أدناه لربطه بملف شخصي.",
+        "authUserId": "معرّف المستخدم (UUID)",
+        "email": "البريد الإلكتروني",
+        "fullName": "الاسم الكامل",
+        "arabicName": "الاسم بالعربية",
+        "role": "الدور",
+        "isActive": "نشط",
+        "submit": "ربط المستخدم",
+        "submitting": "جارٍ الربط…",
+        "errors": {
+          "unauthorized": "لا تملك صلاحية إضافة مستخدمين.",
+          "missingFields": "يرجى تعبئة معرّف المستخدم والبريد الإلكتروني والاسم الكامل.",
+          "invalidId": "أدخل معرّف مستخدم صحيح من Supabase Authentication.",
+          "duplicateUser": "يوجد بالفعل ملف شخصي مرتبط بهذا المعرّف.",
+          "authUserNotFound": "لم يتم العثور على مستخدم في Supabase Auth بهذا المعرّف. أنشئه أولاً من لوحة التحكم ثم أعد المحاولة.",
+          "submitError": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+        }
+      },
+      "table": {
+        "fullName": "الاسم الكامل",
+        "arabicName": "الاسم بالعربية",
+        "email": "البريد الإلكتروني",
+        "role": "الدور",
+        "status": "الحالة",
+        "edit": "تعديل"
+      },
+      "edit": {
+        "title": "تعديل المستخدم",
+        "email": "البريد الإلكتروني",
+        "fullName": "الاسم الكامل",
+        "arabicName": "الاسم بالعربية",
+        "role": "الدور",
+        "isActive": "نشط",
+        "save": "حفظ التغييرات",
+        "saving": "جارٍ الحفظ…",
+        "saved": "تم حفظ التغييرات.",
+        "back": "الرجوع إلى المستخدمين",
+        "errors": {
+          "unauthorized": "لا تملك صلاحية تعديل المستخدمين.",
+          "submitError": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+          "selfLockout": "لا يمكنك إزالة صلاحية المسؤول عن نفسك أو إلغاء تفعيل حسابك الخاص."
+        }
+      }
+    },
+    "equipment": {
+      "listTitle": "المعدات",
+      "addNew": "إضافة معدة",
+      "search": "بحث",
+      "searchPlaceholder": "ابحث بالرمز أو الموقع",
+      "filterBuilding": "المبنى",
+      "filterSubtype": "النوع الفرعي",
+      "filterStatus": "الحالة",
+      "allBuildings": "كل المباني",
+      "allSubtypes": "كل الأنواع الفرعية",
+      "allStatuses": "كل الحالات",
+      "applyFilters": "تصفية",
+      "empty": "لم يتم العثور على معدات.",
+      "table": {
+        "code": "الرمز",
+        "type": "النوع",
+        "building": "المبنى",
+        "floor": "الطابق",
+        "location": "الموقع",
+        "status": "الحالة",
+        "nextMaintenance": "الصيانة القادمة",
+        "view": "عرض"
+      },
+      "form": {
+        "title": "إضافة معدة",
+        "type": "نوع المعدة",
+        "subtype": "النوع الفرعي",
+        "selectType": "اختر النوع",
+        "selectSubtype": "اختر النوع الفرعي",
+        "building": "رمز المبنى",
+        "floor": "الطابق",
+        "location": "الموقع",
+        "weight": "الوزن (كجم)",
+        "frequency": "دورية الصيانة",
+        "submit": "إنشاء المعدة",
+        "submitting": "جارٍ الإنشاء…",
+        "frequency_value": {
+          "weekly": "أسبوعية",
+          "monthly": "شهرية",
+          "quarterly": "ربع سنوية",
+          "semiannual": "نصف سنوية",
+          "yearly": "سنوية"
+        },
+        "errors": {
+          "unauthorized": "لا تملك صلاحية إنشاء معدات.",
+          "invalidSegment": "يجب أن يحتوي المبنى والطابق والموقع على أحرف وأرقام فقط (بدون مسافات أو شرطات).",
+          "submitError": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+        }
+      },
+      "success": {
+        "title": "تم إنشاء المعدة",
+        "codeLabel": "رمز المعدة",
+        "qrTitle": "ملصق رمز الاستجابة السريعة",
+        "download": "تحميل الرمز",
+        "print": "طباعة الملصق",
+        "addAnother": "إضافة أخرى",
+        "viewList": "عرض قائمة المعدات"
+      }
+    }
+  }
+}
