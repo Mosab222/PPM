@@ -3,6 +3,14 @@
     "name": "PPM",
     "tagline": "Planned Preventive Maintenance"
   },
+  "home": {
+    "welcomeLoggedOut": "Sign in to manage equipment maintenance.",
+    "loginButton": "Log in",
+    "welcomeBack": "Welcome back, {name}.",
+    "goToDashboard": "Go to dashboard",
+    "goToArea": "Go to my area",
+    "scanHint": "Scan an equipment's QR code with your phone's camera to view its history and execute maintenance."
+  },
   "nav": {
     "login": "Log in",
     "dashboard": "Dashboard",
@@ -286,6 +294,31 @@
         "print": "Print label",
         "addAnother": "Add another",
         "viewList": "View equipment list"
+      }
+    }
+  },
+  "tech": {
+    "notAuthorized": "You don't have access to this page. Technician role required.",
+    "nav": {
+      "find": "Find equipment",
+      "records": "My records"
+    },
+    "find": {
+      "title": "Find equipment",
+      "instructions": "Enter an equipment code to open its page.",
+      "placeholder": "e.g. FE-CO2-0001-HRM-2F-ICU",
+      "openButton": "Open",
+      "scanHint": "You can also scan the QR code printed on the equipment with your phone's camera — it opens the equipment page directly.",
+      "error": "Please enter an equipment code."
+    },
+    "records": {
+      "title": "My records",
+      "empty": "You haven't submitted any maintenance records yet.",
+      "table": {
+        "code": "Equipment code",
+        "date": "Date",
+        "time": "Time",
+        "result": "Result"
       }
     }
   }

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
-import { Link } from "@/i18n/navigation";
+import { AdminNav } from "@/components/admin-nav";
 
 export default async function AdminLayout({
   children,
@@ -22,29 +22,16 @@ export default async function AdminLayout({
 
   if (user.role !== "admin") {
     return (
-      <div className="rounded-lg border border-border bg-card p-8 text-center">
+      <div className="mx-auto w-full max-w-4xl rounded-lg border border-border bg-card p-8 text-center">
         <p className="text-red-700">{t("notAuthorized")}</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <nav className="flex gap-4 border-b border-border pb-3">
-        <Link href="/admin/dashboard" className="text-sm font-medium text-primary">
-          {t("nav.dashboard")}
-        </Link>
-        <Link href="/admin/equipment" className="text-sm font-medium text-primary">
-          {t("nav.equipment")}
-        </Link>
-        <Link href="/admin/users" className="text-sm font-medium text-primary">
-          {t("nav.users")}
-        </Link>
-        <Link href="/admin/reports" className="text-sm font-medium text-primary">
-          {t("nav.reports")}
-        </Link>
-      </nav>
-      {children}
+    <div className="mx-auto flex w-full max-w-7xl flex-col lg:flex-row lg:gap-6">
+      <AdminNav />
+      <div className="min-w-0 flex-1 pb-20 lg:pb-6">{children}</div>
     </div>
   );
 }

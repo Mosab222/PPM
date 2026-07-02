@@ -63,7 +63,7 @@ export default async function EquipmentPublicPage({
 
   if (!rows || rows.length === 0) {
     return (
-      <div className="rounded-lg border border-border bg-card p-8 text-center">
+      <div className="mx-auto w-full max-w-4xl rounded-lg border border-border bg-card p-8 text-center">
         <h1 className="text-xl font-bold text-red-700">{t("notFound")}</h1>
         <p className="mt-2 text-muted">{t("notFoundBody")}</p>
       </div>
@@ -89,7 +89,7 @@ export default async function EquipmentPublicPage({
   const issuesCount = Number(issues ?? 0);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
       {submitted === "1" && (
         <div
           className={`rounded-lg border p-4 text-center text-sm font-medium ${

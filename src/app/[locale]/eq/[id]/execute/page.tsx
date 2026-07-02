@@ -49,7 +49,7 @@ export default async function ExecuteMaintenancePage({
 
   if (!user.is_active) {
     return (
-      <div className="rounded-lg border border-border bg-card p-8 text-center">
+      <div className="mx-auto w-full max-w-4xl rounded-lg border border-border bg-card p-8 text-center">
         <p className="text-red-700">{tAuth("inactiveAccount")}</p>
         <Link href={`/eq/${id}`} className="mt-4 inline-block text-sm text-primary underline">
           {t("backToEquipment")}
@@ -69,7 +69,7 @@ export default async function ExecuteMaintenancePage({
 
   if (!equipment) {
     return (
-      <div className="rounded-lg border border-border bg-card p-8 text-center">
+      <div className="mx-auto w-full max-w-4xl rounded-lg border border-border bg-card p-8 text-center">
         <p className="text-red-700">{t("noTemplate")}</p>
         <Link href={`/eq/${id}`} className="mt-4 inline-block text-sm text-primary underline">
           {t("backToEquipment")}
@@ -92,7 +92,7 @@ export default async function ExecuteMaintenancePage({
 
   if (!template) {
     return (
-      <div className="rounded-lg border border-border bg-card p-8 text-center">
+      <div className="mx-auto w-full max-w-4xl rounded-lg border border-border bg-card p-8 text-center">
         <p className="text-red-700">{t("noTemplate")}</p>
         <Link href={`/eq/${id}`} className="mt-4 inline-block text-sm text-primary underline">
           {t("backToEquipment")}
@@ -135,7 +135,7 @@ export default async function ExecuteMaintenancePage({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
       <div className="rounded-lg border border-border bg-card p-6 text-center">
         <p className="text-sm text-muted">{t("title")}</p>
         <p className="mt-1 text-xl font-bold text-primary">{templateName}</p>

@@ -68,7 +68,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <div className="flex min-h-screen flex-col">
             <header className="border-b border-border bg-card">
-              <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
+              <div className="flex items-center justify-between px-4 py-3">
                 <span className="text-lg font-bold text-primary">PPM</span>
                 <div className="flex items-center gap-3">
                   <AuthNav user={user} locale={locale} />
@@ -76,9 +76,7 @@ export default async function LocaleLayout({
                 </div>
               </div>
             </header>
-            <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-6">
-              {children}
-            </main>
+            <main className="w-full flex-1 px-4 py-6">{children}</main>
           </div>
         </NextIntlClientProvider>
       </body>
