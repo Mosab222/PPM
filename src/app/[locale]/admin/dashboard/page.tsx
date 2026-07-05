@@ -5,13 +5,12 @@ import { Link } from "@/i18n/navigation";
 import { formatNumber } from "@/lib/format";
 import { SummaryCard } from "@/components/summary-card";
 import { ComplianceChart } from "@/components/compliance-chart";
+import { TypeSubtypeFilter, type FilterType, type FilterSubtype } from "@/components/type-subtype-filter";
 import {
   aggregateCompliance,
   summarizeCompliance,
   type EquipmentForCompliance,
 } from "@/lib/compliance";
-
-type EquipmentSubtype = { code: string; name: string; arabic_name: string | null };
 
 const STATUS_VALUES = ["compliant", "due", "overdue", "needs_attention", "decommissioned"] as const;
 
@@ -22,6 +21,7 @@ export default async function DashboardPage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<{
     building?: string;
+    type?: string;
     subtype?: string;
     status?: string;
     from?: string;
@@ -29,7 +29,7 @@ export default async function DashboardPage({
   }>;
 }) {
   const { locale } = await params;
-  const { building, subtype, status, from, to } = await searchParams;
+  const { building, type, subtype, status, from, to } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("admin.dashboard");
   const tStatus = await getTranslations("equipment.status_value");
@@ -42,6 +42,7 @@ export default async function DashboardPage({
     .eq("deleted", false);
 
   if (building) query = query.eq("building_code", building);
+  if (type) query = query.eq("type_code", type);
   if (subtype) query = query.eq("subtype_code", subtype);
   if (status) query = query.eq("status", status);
   if (from) query = query.gte("next_maintenance_date", from);
@@ -53,8 +54,17 @@ export default async function DashboardPage({
   const summary = summarizeCompliance(rows);
   const chartData = aggregateCompliance(rows, building ? "floor" : "building");
 
-  const [{ data: subtypes }, { data: buildingRows }] = await Promise.all([
-    supabase.from("equipment_subtypes").select("code, name, arabic_name").returns<EquipmentSubtype[]>(),
+  const [{ data: types }, { data: subtypes }, { data: buildingRows }] = await Promise.all([
+    supabase
+      .from("equipment_types")
+      .select("id, code, name, arabic_name")
+      .eq("active", true)
+      .returns<FilterType[]>(),
+    supabase
+      .from("equipment_subtypes")
+      .select("id, code, parent_type_id, name, arabic_name")
+      .eq("active", true)
+      .returns<FilterSubtype[]>(),
     supabase.from("equipment").select("building_code").eq("deleted", false).not("building_code", "is", null),
   ]);
 
@@ -63,6 +73,7 @@ export default async function DashboardPage({
   ).sort();
 
   const backToBuildingsParams = new URLSearchParams();
+  if (type) backToBuildingsParams.set("type", type);
   if (subtype) backToBuildingsParams.set("subtype", subtype);
   if (status) backToBuildingsParams.set("status", status);
   if (from) backToBuildingsParams.set("from", from);
@@ -92,21 +103,17 @@ export default async function DashboardPage({
             ))}
           </select>
         </div>
-        <div>
-          <label className="mb-1 block text-xs text-muted">{t("filters.subtype")}</label>
-          <select
-            name="subtype"
-            defaultValue={subtype ?? ""}
-            className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
-          >
-            <option value="">{t("filters.allSubtypes")}</option>
-            {(subtypes ?? []).map((s) => (
-              <option key={s.code} value={s.code}>
-                {(locale === "ar" ? s.arabic_name : s.name) || s.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <TypeSubtypeFilter
+          types={types ?? []}
+          subtypes={subtypes ?? []}
+          locale={locale}
+          defaultTypeCode={type}
+          defaultSubtypeCode={subtype}
+          typeLabel={t("filters.type")}
+          subtypeLabel={t("filters.subtype")}
+          allTypesLabel={t("filters.allTypes")}
+          allSubtypesLabel={t("filters.allSubtypes")}
+        />
         <div>
           <label className="mb-1 block text-xs text-muted">{t("filters.status")}</label>
           <select

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate, formatTime } from "@/lib/format";
 import { ResultBadge } from "@/components/result-badge";
 import { ExportExcelButton, type ReportRow } from "@/components/export-excel-button";
+import { TypeSubtypeFilter, type FilterType, type FilterSubtype } from "@/components/type-subtype-filter";
 import { Link } from "@/i18n/navigation";
 
 type EquipmentLookup = {
@@ -10,11 +11,10 @@ type EquipmentLookup = {
   building_code: string | null;
   floor: string | null;
   location: string | null;
+  type_code: string | null;
   subtype_code: string | null;
   status: string | null;
 };
-
-type EquipmentSubtype = { code: string; name: string; arabic_name: string | null };
 
 type TechnicianOption = { id: string; full_name: string | null; arabic_name: string | null };
 
@@ -39,6 +39,7 @@ export default async function ReportsPage({
   searchParams: Promise<{
     q?: string;
     building?: string;
+    type?: string;
     subtype?: string;
     status?: string;
     technician?: string;
@@ -47,20 +48,41 @@ export default async function ReportsPage({
   }>;
 }) {
   const { locale } = await params;
-  const { q, building, subtype, status, technician, from, to } = await searchParams;
+  const { q, building, type, subtype, status, technician, from, to } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("admin.reports");
   const tStatus = await getTranslations("equipment.status_value");
 
   const supabase = await createClient();
 
-  const [{ data: equipmentRows }, { data: subtypes }, { data: technicians }] = await Promise.all([
+  const [
+    { data: equipmentRows },
+    { data: types },
+    { data: subtypes },
+    { data: allSubtypesForLabels },
+    { data: technicians },
+  ] = await Promise.all([
     supabase
       .from("equipment")
-      .select("id, building_code, floor, location, subtype_code, status")
+      .select("id, building_code, floor, location, type_code, subtype_code, status")
       .eq("deleted", false)
       .returns<EquipmentLookup[]>(),
-    supabase.from("equipment_subtypes").select("code, name, arabic_name").returns<EquipmentSubtype[]>(),
+    supabase
+      .from("equipment_types")
+      .select("id, code, name, arabic_name")
+      .eq("active", true)
+      .returns<FilterType[]>(),
+    supabase
+      .from("equipment_subtypes")
+      .select("id, code, parent_type_id, name, arabic_name")
+      .eq("active", true)
+      .returns<FilterSubtype[]>(),
+    // Unfiltered (includes inactive) so historical report rows still show a
+    // proper label even if their subtype was later deactivated.
+    supabase
+      .from("equipment_subtypes")
+      .select("code, name, arabic_name")
+      .returns<{ code: string; name: string; arabic_name: string | null }[]>(),
     supabase
       .from("users")
       .select("id, full_name, arabic_name")
@@ -71,16 +93,17 @@ export default async function ReportsPage({
 
   const equipmentMap = new Map((equipmentRows ?? []).map((e) => [e.id, e]));
   const subtypeLabels = new Map(
-    (subtypes ?? []).map((s) => [s.code, (locale === "ar" ? s.arabic_name : s.name) || s.name])
+    (allSubtypesForLabels ?? []).map((s) => [s.code, (locale === "ar" ? s.arabic_name : s.name) || s.name])
   );
   const buildings = Array.from(
     new Set((equipmentRows ?? []).map((e) => e.building_code).filter((b): b is string => Boolean(b)))
   ).sort();
 
   let allowedEquipmentIds: string[] | null = null;
-  if (building || subtype || status) {
+  if (building || type || subtype || status) {
     let filtered = equipmentRows ?? [];
     if (building) filtered = filtered.filter((e) => e.building_code === building);
+    if (type) filtered = filtered.filter((e) => e.type_code === type);
     if (subtype) filtered = filtered.filter((e) => e.subtype_code === subtype);
     if (status) filtered = filtered.filter((e) => e.status === status);
     allowedEquipmentIds = filtered.map((e) => e.id);
@@ -161,21 +184,17 @@ export default async function ReportsPage({
             ))}
           </select>
         </div>
-        <div>
-          <label className="mb-1 block text-xs text-muted">{t("filters.subtype")}</label>
-          <select
-            name="subtype"
-            defaultValue={subtype ?? ""}
-            className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
-          >
-            <option value="">{t("filters.allSubtypes")}</option>
-            {(subtypes ?? []).map((s) => (
-              <option key={s.code} value={s.code}>
-                {subtypeLabels.get(s.code)}
-              </option>
-            ))}
-          </select>
-        </div>
+        <TypeSubtypeFilter
+          types={types ?? []}
+          subtypes={subtypes ?? []}
+          locale={locale}
+          defaultTypeCode={type}
+          defaultSubtypeCode={subtype}
+          typeLabel={t("filters.type")}
+          subtypeLabel={t("filters.subtype")}
+          allTypesLabel={t("filters.allTypes")}
+          allSubtypesLabel={t("filters.allSubtypes")}
+        />
         <div>
           <label className="mb-1 block text-xs text-muted">{t("filters.status")}</label>
           <select
