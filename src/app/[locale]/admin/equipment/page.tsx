@@ -165,6 +165,8 @@ export default async function EquipmentListPage({
               <th className="px-4 py-2 text-start font-medium">{t("table.status")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.nextMaintenance")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.view")}</th>
+              <th className="px-4 py-2 text-start font-medium">{t("table.edit")}</th>
+              <th className="px-4 py-2 text-start font-medium">{t("table.qr")}</th>
             </tr>
           </thead>
           <tbody>
@@ -182,6 +184,16 @@ export default async function EquipmentListPage({
                 <td className="px-4 py-2">
                   <Link href={`/eq/${row.id}`} className="text-primary underline">
                     {t("table.view")}
+                  </Link>
+                </td>
+                <td className="px-4 py-2">
+                  <Link href={`/admin/equipment/${row.id}`} className="text-primary underline">
+                    {t("table.edit")}
+                  </Link>
+                </td>
+                <td className="px-4 py-2">
+                  <Link href={`/admin/equipment/${row.id}/qr`} className="text-primary underline">
+                    {t("table.qr")}
                   </Link>
                 </td>
               </tr>

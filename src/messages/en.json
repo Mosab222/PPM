@@ -263,10 +263,14 @@
         "location": "Location",
         "status": "Status",
         "nextMaintenance": "Next maintenance",
-        "view": "View"
+        "view": "View",
+        "edit": "Edit",
+        "qr": "QR"
       },
       "form": {
         "title": "Add equipment",
+        "editTitle": "Edit equipment",
+        "code": "Equipment code",
         "type": "Equipment type",
         "subtype": "Subtype",
         "selectType": "Select a type",
@@ -276,8 +280,13 @@
         "location": "Location",
         "weight": "Weight (kg)",
         "frequency": "Maintenance frequency",
+        "status": "Status",
         "submit": "Create equipment",
         "submitting": "Creating…",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "saved": "Changes saved.",
+        "back": "Back to equipment list",
         "frequency_value": {
           "weekly": "Weekly",
           "monthly": "Monthly",
@@ -286,10 +295,15 @@
           "yearly": "Yearly"
         },
         "errors": {
-          "unauthorized": "You don't have permission to create equipment.",
+          "unauthorized": "You don't have permission to manage equipment.",
           "invalidSegment": "Building, floor, and location must contain only letters and numbers (no spaces or hyphens).",
+          "invalidWeight": "Please enter a valid weight greater than 0.",
           "submitError": "Something went wrong. Please try again."
         }
+      },
+      "qrPage": {
+        "title": "Equipment QR code",
+        "back": "Back to equipment list"
       },
       "success": {
         "title": "Equipment created",
