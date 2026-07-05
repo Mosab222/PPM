@@ -1,12 +1,13 @@
 "use client";
 
-import { LayoutDashboard, Wrench, Users, FileBarChart } from "lucide-react";
+import { LayoutDashboard, Wrench, Tags, Users, FileBarChart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 
 const NAV_ITEMS = [
   { href: "/admin/dashboard", key: "dashboard", Icon: LayoutDashboard },
   { href: "/admin/equipment", key: "equipment", Icon: Wrench },
+  { href: "/admin/types", key: "types", Icon: Tags },
   { href: "/admin/users", key: "users", Icon: Users },
   { href: "/admin/reports", key: "reports", Icon: FileBarChart },
 ] as const;

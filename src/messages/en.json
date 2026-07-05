@@ -109,6 +109,7 @@
     "nav": {
       "dashboard": "Dashboard",
       "equipment": "Equipment",
+      "types": "Types",
       "users": "Users",
       "reports": "Reports"
     },
@@ -294,6 +295,67 @@
         "print": "Print label",
         "addAnother": "Add another",
         "viewList": "View equipment list"
+      }
+    },
+    "types": {
+      "title": "Equipment types",
+      "addType": "Add type",
+      "addSubtype": "Add subtype",
+      "activeBadge": "Active",
+      "inactiveBadge": "Inactive",
+      "noSubtypes": "No subtypes yet.",
+      "empty": "No equipment types yet.",
+      "edit": "Edit",
+      "kg": "kg",
+      "type": {
+        "newTitle": "Add equipment type",
+        "editTitle": "Edit equipment type",
+        "code": "Code",
+        "codeHint": "Used in equipment IDs — cannot be changed after creation.",
+        "name": "Name (English)",
+        "arabicName": "Name (Arabic)",
+        "description": "Description",
+        "active": "Active",
+        "submit": "Create type",
+        "submitting": "Creating…",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "created": "Equipment type created.",
+        "saved": "Changes saved.",
+        "addAnother": "Add another",
+        "back": "Back to types",
+        "errors": {
+          "unauthorized": "You don't have permission to manage equipment types.",
+          "missingFields": "Please fill in the code and name.",
+          "codeExists": "A type with this code already exists.",
+          "submitError": "Something went wrong. Please try again."
+        }
+      },
+      "subtype": {
+        "newTitle": "Add subtype",
+        "editTitle": "Edit subtype",
+        "parentType": "Parent type",
+        "selectParentType": "Select a type",
+        "code": "Code",
+        "codeHint": "Used in equipment IDs — cannot be changed after creation.",
+        "name": "Name (English)",
+        "arabicName": "Name (Arabic)",
+        "defaultWeight": "Default weight (kg)",
+        "active": "Active",
+        "submit": "Create subtype",
+        "submitting": "Creating…",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "created": "Subtype created.",
+        "saved": "Changes saved.",
+        "addAnother": "Add another",
+        "back": "Back to types",
+        "errors": {
+          "unauthorized": "You don't have permission to manage equipment subtypes.",
+          "missingFields": "Please select a parent type and fill in the code and name.",
+          "codeExists": "A subtype with this code already exists.",
+          "submitError": "Something went wrong. Please try again."
+        }
       }
     }
   },
