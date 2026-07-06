@@ -24,7 +24,7 @@ export function AdminNav() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden shrink-0 border-e border-border lg:block lg:w-56">
+      <aside className="hidden shrink-0 border-e border-border lg:block lg:w-56 print:hidden">
         <nav className="sticky top-16 flex flex-col gap-1 p-4">
           {NAV_ITEMS.map(({ href, key, Icon }) => {
             const active = isActive(href);
@@ -47,7 +47,7 @@ export function AdminNav() {
       </aside>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-20 flex border-t border-border bg-card lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-20 flex border-t border-border bg-card lg:hidden print:hidden">
         {NAV_ITEMS.map(({ href, key, Icon }) => {
           const active = isActive(href);
           return (

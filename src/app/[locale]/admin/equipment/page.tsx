@@ -87,12 +87,20 @@ export default async function EquipmentListPage({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{t("listTitle")}</h1>
-        <Link
-          href="/admin/equipment/new"
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-        >
-          {t("addNew")}
-        </Link>
+        <div className="flex gap-3">
+          <Link
+            href="/admin/equipment/print"
+            className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-background"
+          >
+            {t("print.linkLabel")}
+          </Link>
+          <Link
+            href="/admin/equipment/new"
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+          >
+            {t("addNew")}
+          </Link>
+        </div>
       </div>
 
       <form method="GET" className="flex flex-wrap items-end gap-3 rounded-lg border border-border bg-card p-4">

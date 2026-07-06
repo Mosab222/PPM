@@ -365,6 +365,27 @@
         "title": "Equipment QR code",
         "back": "Back to equipment list"
       },
+      "print": {
+        "title": "Print QR labels",
+        "linkLabel": "Print QR labels",
+        "filters": {
+          "facility": "Facility",
+          "type": "Type",
+          "subtype": "Subtype",
+          "floor": "Floor",
+          "area": "Area",
+          "allFacilities": "All facilities",
+          "allTypes": "All types",
+          "allSubtypes": "All subtypes",
+          "allFloors": "All floors",
+          "allAreas": "All areas",
+          "apply": "Filter",
+          "reset": "Reset"
+        },
+        "resultCount": "{count} labels will print",
+        "printButton": "Print",
+        "empty": "No equipment matches the current filters."
+      },
       "success": {
         "title": "Equipment created",
         "codeLabel": "Equipment code",

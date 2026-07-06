@@ -35,4 +35,36 @@ body {
     position: absolute;
     inset: 0;
   }
+
+  #bulk-qr-print-area,
+  #bulk-qr-print-area * {
+    visibility: visible;
+  }
+  #bulk-qr-print-area {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+  }
+
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  .qr-print-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6mm !important;
+  }
+
+  .qr-label {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    min-height: 58mm;
+  }
+
+  .qr-label img {
+    width: 30mm !important;
+    height: 30mm !important;
+  }
 }

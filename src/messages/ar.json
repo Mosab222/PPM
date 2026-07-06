@@ -365,6 +365,27 @@
         "title": "رمز QR للمعدة",
         "back": "الرجوع إلى قائمة المعدات"
       },
+      "print": {
+        "title": "طباعة ملصقات QR",
+        "linkLabel": "طباعة ملصقات QR",
+        "filters": {
+          "facility": "المنشأة",
+          "type": "النوع",
+          "subtype": "النوع الفرعي",
+          "floor": "الطابق",
+          "area": "المنطقة",
+          "allFacilities": "كل المنشآت",
+          "allTypes": "كل الأنواع",
+          "allSubtypes": "كل الأنواع الفرعية",
+          "allFloors": "كل الطوابق",
+          "allAreas": "كل المناطق",
+          "apply": "تصفية",
+          "reset": "إعادة تعيين"
+        },
+        "resultCount": "سيتم طباعة {count} ملصق",
+        "printButton": "طباعة",
+        "empty": "لا توجد معدات مطابقة للمرشحات الحالية."
+      },
       "success": {
         "title": "تم إنشاء المعدة",
         "codeLabel": "رمز المعدة",
