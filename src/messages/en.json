@@ -159,15 +159,15 @@
       "title": "Dashboard",
       "cards": {
         "total": "Total equipment",
-        "compliant": "Compliant",
-        "dueSoon": "Due soon",
+        "completed": "Completed",
+        "scheduled": "Scheduled",
         "overdue": "Overdue"
       },
       "chart": {
-        "title": "Maintenance compliance",
+        "title": "Maintenance scheduling",
         "byFloorIn": "Floors in {facility}",
         "backToBuildings": "← Back to all facilities",
-        "done": "Done",
+        "done": "Completed",
         "scheduled": "Scheduled",
         "overdue": "Overdue",
         "empty": "No equipment matches the current filters."
@@ -177,14 +177,12 @@
         "type": "Type",
         "subtype": "Subtype",
         "area": "Area",
-        "status": "Status",
-        "fromDate": "Due from",
-        "toDate": "Due to",
+        "status": "Scheduling status",
         "allFacilities": "All facilities",
         "allTypes": "All types",
         "allSubtypes": "All subtypes",
         "allAreas": "All areas",
-        "allStatuses": "All statuses",
+        "allStatuses": "All",
         "apply": "Filter",
         "reset": "Reset"
       }

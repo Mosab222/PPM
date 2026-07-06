@@ -7,12 +7,29 @@ import { SummaryCard } from "@/components/summary-card";
 import { ComplianceChart } from "@/components/compliance-chart";
 import { TypeSubtypeFilter, type FilterType, type FilterSubtype } from "@/components/type-subtype-filter";
 import {
-  aggregateCompliance,
-  summarizeCompliance,
-  type EquipmentForCompliance,
-} from "@/lib/compliance";
+  aggregateScheduling,
+  classifySchedulingStatus,
+  monthKey,
+  previousMonthKey,
+  summarizeScheduling,
+  type SchedulingBucket,
+} from "@/lib/scheduling";
 
-const STATUS_VALUES = ["compliant", "due", "overdue", "needs_attention", "decommissioned"] as const;
+const SCHEDULE_VALUES = ["done", "scheduled", "overdue"] as const;
+const NO_MATCH_SENTINEL = "__no_match__";
+
+type EquipmentRow = {
+  id: string;
+  facility_code: string | null;
+  floor: string | null;
+  created_at: string;
+  maintenance_frequency: string | null;
+};
+
+type MaintenanceLogRow = {
+  equipment_id: string;
+  maintenance_date: string;
+};
 
 export default async function DashboardPage({
   params,
@@ -24,37 +41,67 @@ export default async function DashboardPage({
     type?: string;
     subtype?: string;
     area?: string;
-    status?: string;
-    from?: string;
-    to?: string;
+    schedule?: string;
   }>;
 }) {
   const { locale } = await params;
-  const { facility, type, subtype, area, status, from, to } = await searchParams;
+  const { facility, type, subtype, area, schedule } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("admin.dashboard");
-  const tStatus = await getTranslations("equipment.status_value");
 
   const supabase = await createClient();
 
   let query = supabase
     .from("equipment")
-    .select("status, next_maintenance_date, facility_code, floor, subtype_code")
+    .select("id, facility_code, floor, created_at, maintenance_frequency")
     .eq("deleted", false);
 
   if (facility) query = query.eq("facility_code", facility);
   if (type) query = query.eq("type_code", type);
   if (subtype) query = query.eq("subtype_code", subtype);
   if (area) query = query.eq("area", area);
-  if (status) query = query.eq("status", status);
-  if (from) query = query.gte("next_maintenance_date", from);
-  if (to) query = query.lte("next_maintenance_date", to);
 
-  const { data: equipment } = await query.returns<EquipmentForCompliance[]>();
-  const rows = equipment ?? [];
+  const { data: equipment } = await query.returns<EquipmentRow[]>();
+  const equipmentRows = equipment ?? [];
 
-  const summary = summarizeCompliance(rows);
-  const chartData = aggregateCompliance(rows, facility ? "floor" : "facility");
+  const todayIso = new Date().toISOString();
+  const currentMonth = monthKey(todayIso);
+  const previousMonth = previousMonthKey(currentMonth);
+  const previousMonthStartIso = `${previousMonth}-01`;
+
+  const equipmentIds = equipmentRows.map((e) => e.id);
+  const { data: logs } = await supabase
+    .from("maintenance_logs")
+    .select("equipment_id, maintenance_date")
+    .eq("status", "completed")
+    .eq("deleted", false)
+    .gte("maintenance_date", previousMonthStartIso)
+    .in("equipment_id", equipmentIds.length > 0 ? equipmentIds : [NO_MATCH_SENTINEL])
+    .returns<MaintenanceLogRow[]>();
+
+  const currentMonthCompleted = new Set<string>();
+  const previousMonthCompleted = new Set<string>();
+  for (const log of logs ?? []) {
+    const logMonth = monthKey(log.maintenance_date);
+    if (logMonth === currentMonth) currentMonthCompleted.add(log.equipment_id);
+    else if (logMonth === previousMonth) previousMonthCompleted.add(log.equipment_id);
+  }
+
+  const classified = equipmentRows.map((row) => ({
+    ...row,
+    bucket: classifySchedulingStatus({
+      frequency: row.maintenance_frequency,
+      createdAt: row.created_at,
+      hasCurrentMonthCompletion: currentMonthCompleted.has(row.id),
+      hasPreviousMonthCompletion: previousMonthCompleted.has(row.id),
+      todayIso,
+    }),
+  }));
+
+  const rows = schedule ? classified.filter((r) => r.bucket === schedule) : classified;
+
+  const summary = summarizeScheduling(rows.map((r) => r.bucket as SchedulingBucket));
+  const chartData = aggregateScheduling(rows, facility ? "floor" : "facility");
 
   const [{ data: types }, { data: subtypes }, { data: facilityRows }, { data: areaRows }] = await Promise.all([
     supabase
@@ -82,9 +129,7 @@ export default async function DashboardPage({
   if (type) backToFacilitiesParams.set("type", type);
   if (subtype) backToFacilitiesParams.set("subtype", subtype);
   if (area) backToFacilitiesParams.set("area", area);
-  if (status) backToFacilitiesParams.set("status", status);
-  if (from) backToFacilitiesParams.set("from", from);
-  if (to) backToFacilitiesParams.set("to", to);
+  if (schedule) backToFacilitiesParams.set("schedule", schedule);
   const backToFacilitiesQuery = backToFacilitiesParams.toString();
 
   return (
@@ -139,35 +184,17 @@ export default async function DashboardPage({
         <div>
           <label className="mb-1 block text-xs text-muted">{t("filters.status")}</label>
           <select
-            name="status"
-            defaultValue={status ?? ""}
+            name="schedule"
+            defaultValue={schedule ?? ""}
             className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
           >
             <option value="">{t("filters.allStatuses")}</option>
-            {STATUS_VALUES.map((value) => (
+            {SCHEDULE_VALUES.map((value) => (
               <option key={value} value={value}>
-                {tStatus(value)}
+                {t(`chart.${value}`)}
               </option>
             ))}
           </select>
-        </div>
-        <div>
-          <label className="mb-1 block text-xs text-muted">{t("filters.fromDate")}</label>
-          <input
-            type="date"
-            name="from"
-            defaultValue={from ?? ""}
-            className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
-          />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs text-muted">{t("filters.toDate")}</label>
-          <input
-            type="date"
-            name="to"
-            defaultValue={to ?? ""}
-            className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
-          />
         </div>
         <button
           type="submit"
@@ -186,13 +213,13 @@ export default async function DashboardPage({
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <SummaryCard label={t("cards.total")} value={formatNumber(summary.total, locale)} />
         <SummaryCard
-          label={t("cards.compliant")}
-          value={formatNumber(summary.compliant, locale)}
+          label={t("cards.completed")}
+          value={formatNumber(summary.completed, locale)}
           color="green"
         />
         <SummaryCard
-          label={t("cards.dueSoon")}
-          value={formatNumber(summary.dueSoon, locale)}
+          label={t("cards.scheduled")}
+          value={formatNumber(summary.scheduled, locale)}
           color="amber"
         />
         <SummaryCard

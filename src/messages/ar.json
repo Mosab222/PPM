@@ -159,17 +159,17 @@
       "title": "لوحة التحكم",
       "cards": {
         "total": "إجمالي المعدات",
-        "compliant": "متوافقة",
-        "dueSoon": "مستحقة قريبًا",
+        "completed": "منجزة",
+        "scheduled": "مجدولة",
         "overdue": "متأخرة"
       },
       "chart": {
-        "title": "الالتزام بالصيانة",
+        "title": "جدولة الصيانة",
         "byFloorIn": "الطوابق في {facility}",
         "backToBuildings": "→ الرجوع إلى كل المنشآت",
-        "done": "منجز",
-        "scheduled": "مجدول",
-        "overdue": "متأخر",
+        "done": "منجزة",
+        "scheduled": "مجدولة",
+        "overdue": "متأخرة",
         "empty": "لا توجد معدات مطابقة للمرشحات الحالية."
       },
       "filters": {
@@ -177,14 +177,12 @@
         "type": "النوع",
         "subtype": "النوع الفرعي",
         "area": "المنطقة",
-        "status": "الحالة",
-        "fromDate": "مستحقة من",
-        "toDate": "مستحقة إلى",
+        "status": "حالة الجدولة",
         "allFacilities": "كل المنشآت",
         "allTypes": "كل الأنواع",
         "allSubtypes": "كل الأنواع الفرعية",
         "allAreas": "كل المناطق",
-        "allStatuses": "كل الحالات",
+        "allStatuses": "الكل",
         "apply": "تصفية",
         "reset": "إعادة تعيين"
       }

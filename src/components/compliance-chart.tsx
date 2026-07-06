@@ -14,7 +14,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
-import type { ComplianceChartDatum } from "@/lib/compliance";
+import type { SchedulingChartDatum } from "@/lib/scheduling";
 
 const COLORS = { done: "#16a34a", scheduled: "#d97706", overdue: "#dc2626" };
 
@@ -29,7 +29,7 @@ export function ComplianceChart({
   locale,
   drillable,
 }: {
-  data: ComplianceChartDatum[];
+  data: SchedulingChartDatum[];
   locale: string;
   drillable: boolean;
 }) {
@@ -47,7 +47,7 @@ export function ComplianceChart({
     if (!label) return;
 
     const params = new URLSearchParams(searchParams.toString());
-    params.set("building", label);
+    params.set("facility", label);
     router.push(`/admin/dashboard?${params.toString()}`);
   }
 
