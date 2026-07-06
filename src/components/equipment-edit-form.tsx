@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { updateEquipment } from "@/app/[locale]/admin/equipment/[id]/actions";
 import { OperationalStatusBadge } from "@/components/operational-status-badge";
 import type { OperationalStatus } from "@/lib/operational-status";
+import { FLOOR_OPTIONS } from "@/lib/floor-options";
 
 export type EditableEquipment = {
   id: string;
@@ -52,7 +53,7 @@ export function EquipmentEditForm({
     setSaved(false);
 
     const weightValue = Number(weight);
-    if (!facilityCode.trim() || !floor.trim() || !room.trim()) {
+    if (!facilityCode.trim() || !floor || !room.trim()) {
       setError("invalidSegment");
       return;
     }
@@ -107,13 +108,18 @@ export function EquipmentEditForm({
 
         <div>
           <label className="mb-1 block text-sm font-medium">{t("floor")}</label>
-          <input
-            type="text"
+          <select
             value={floor}
             onChange={(e) => setFloor(e.target.value)}
-            dir="ltr"
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
-          />
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+          >
+            <option value="">{t("selectFloor")}</option>
+            {FLOOR_OPTIONS.map((value) => (
+              <option key={value} value={value}>
+                {t(`floor_value.${value}`)} ({value})
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>

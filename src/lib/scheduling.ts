@@ -66,13 +66,13 @@ export function summarizeScheduling(buckets: SchedulingBucket[]): SchedulingSumm
 }
 
 export function aggregateScheduling(
-  rows: Array<{ bucket: SchedulingBucket; facility_code: string | null; floor: string | null }>,
-  groupBy: "facility" | "floor"
+  rows: Array<{ bucket: SchedulingBucket; floor: string | null; area: string | null }>,
+  groupBy: "floor" | "area"
 ): SchedulingChartDatum[] {
   const map = new Map<string, SchedulingChartDatum>();
 
   for (const row of rows) {
-    const label = (groupBy === "facility" ? row.facility_code : row.floor) || "—";
+    const label = (groupBy === "floor" ? row.floor : row.area) || "—";
     if (!map.has(label)) {
       map.set(label, { label, done: 0, scheduled: 0, overdue: 0 });
     }

@@ -47,7 +47,7 @@ export function ComplianceChart({
     if (!label) return;
 
     const params = new URLSearchParams(searchParams.toString());
-    params.set("facility", label);
+    params.set("floor", label);
     router.push(`/admin/dashboard?${params.toString()}`);
   }
 

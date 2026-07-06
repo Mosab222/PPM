@@ -42,12 +42,14 @@ export function OperationalChart({
 
   function handleBarClick(barData: unknown) {
     if (!drillable) return;
-    const payload = barData as { label?: string; payload?: { label?: string } };
-    const label = payload?.label ?? payload?.payload?.label;
-    if (!label) return;
+    const payload = barData as { key?: string; payload?: { key?: string } };
+    const key = payload?.key ?? payload?.payload?.key;
+    if (!key) return;
 
+    // Drilling only ever happens from the top-level (type-grouped) view, so
+    // the drill target is always the "type" filter/param.
     const params = new URLSearchParams(searchParams.toString());
-    params.set("facility", label);
+    params.set("type", key);
     router.push(`/admin/status?${params.toString()}`);
   }
 

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
+import { FLOOR_OPTIONS } from "@/lib/floor-options";
 
 const FREQUENCIES = ["weekly", "monthly", "quarterly", "semiannual", "yearly"];
 const STATUSES = ["compliant", "due", "overdue", "needs_attention", "decommissioned"];
@@ -35,10 +36,14 @@ export async function updateEquipment(input: UpdateEquipmentInput): Promise<Upda
   }
 
   const facility = normalizeSegment(input.facilityCode);
-  const floor = normalizeSegment(input.floor);
+  const floor = input.floor.trim().toUpperCase();
   const room = normalizeSegment(input.room);
 
-  if (![facility, floor, room].every((segment) => segment.length > 0)) {
+  if (
+    !facility ||
+    !room ||
+    !FLOOR_OPTIONS.includes(floor as (typeof FLOOR_OPTIONS)[number])
+  ) {
     return { error: "invalidSegment" };
   }
 

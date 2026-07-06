@@ -20,8 +20,8 @@ const NO_MATCH_SENTINEL = "__no_match__";
 
 type EquipmentRow = {
   id: string;
-  facility_code: string | null;
   floor: string | null;
+  area: string | null;
   created_at: string;
   maintenance_frequency: string | null;
 };
@@ -40,12 +40,13 @@ export default async function DashboardPage({
     facility?: string;
     type?: string;
     subtype?: string;
+    floor?: string;
     area?: string;
     schedule?: string;
   }>;
 }) {
   const { locale } = await params;
-  const { facility, type, subtype, area, schedule } = await searchParams;
+  const { facility, type, subtype, floor, area, schedule } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("admin.dashboard");
 
@@ -53,12 +54,13 @@ export default async function DashboardPage({
 
   let query = supabase
     .from("equipment")
-    .select("id, facility_code, floor, created_at, maintenance_frequency")
+    .select("id, floor, area, created_at, maintenance_frequency")
     .eq("deleted", false);
 
   if (facility) query = query.eq("facility_code", facility);
   if (type) query = query.eq("type_code", type);
   if (subtype) query = query.eq("subtype_code", subtype);
+  if (floor) query = query.eq("floor", floor);
   if (area) query = query.eq("area", area);
 
   const { data: equipment } = await query.returns<EquipmentRow[]>();
@@ -101,36 +103,40 @@ export default async function DashboardPage({
   const rows = schedule ? classified.filter((r) => r.bucket === schedule) : classified;
 
   const summary = summarizeScheduling(rows.map((r) => r.bucket as SchedulingBucket));
-  const chartData = aggregateScheduling(rows, facility ? "floor" : "facility");
+  const chartData = aggregateScheduling(rows, floor ? "area" : "floor");
 
-  const [{ data: types }, { data: subtypes }, { data: facilityRows }, { data: areaRows }] = await Promise.all([
-    supabase
-      .from("equipment_types")
-      .select("id, code, name, arabic_name")
-      .eq("active", true)
-      .returns<FilterType[]>(),
-    supabase
-      .from("equipment_subtypes")
-      .select("id, code, parent_type_id, name, arabic_name")
-      .eq("active", true)
-      .returns<FilterSubtype[]>(),
-    supabase.from("equipment").select("facility_code").eq("deleted", false).not("facility_code", "is", null),
-    supabase.from("equipment").select("area").eq("deleted", false).not("area", "is", null),
-  ]);
+  const [{ data: types }, { data: subtypes }, { data: facilityRows }, { data: floorRows }, { data: areaRows }] =
+    await Promise.all([
+      supabase
+        .from("equipment_types")
+        .select("id, code, name, arabic_name")
+        .eq("active", true)
+        .returns<FilterType[]>(),
+      supabase
+        .from("equipment_subtypes")
+        .select("id, code, parent_type_id, name, arabic_name")
+        .eq("active", true)
+        .returns<FilterSubtype[]>(),
+      supabase.from("equipment").select("facility_code").eq("deleted", false).not("facility_code", "is", null),
+      supabase.from("equipment").select("floor").eq("deleted", false).not("floor", "is", null),
+      supabase.from("equipment").select("area").eq("deleted", false).not("area", "is", null),
+    ]);
 
   const facilities = Array.from(
     new Set((facilityRows ?? []).map((r) => r.facility_code as string))
   ).sort();
+  const floors = Array.from(new Set((floorRows ?? []).map((r) => r.floor as string))).sort();
   const areas = Array.from(
     new Set((areaRows ?? []).map((r) => r.area as string))
   ).sort();
 
-  const backToFacilitiesParams = new URLSearchParams();
-  if (type) backToFacilitiesParams.set("type", type);
-  if (subtype) backToFacilitiesParams.set("subtype", subtype);
-  if (area) backToFacilitiesParams.set("area", area);
-  if (schedule) backToFacilitiesParams.set("schedule", schedule);
-  const backToFacilitiesQuery = backToFacilitiesParams.toString();
+  const backToFloorsParams = new URLSearchParams();
+  if (facility) backToFloorsParams.set("facility", facility);
+  if (type) backToFloorsParams.set("type", type);
+  if (subtype) backToFloorsParams.set("subtype", subtype);
+  if (area) backToFloorsParams.set("area", area);
+  if (schedule) backToFloorsParams.set("schedule", schedule);
+  const backToFloorsQuery = backToFloorsParams.toString();
 
   return (
     <div className="flex flex-col gap-6">
@@ -166,6 +172,21 @@ export default async function DashboardPage({
           allTypesLabel={t("filters.allTypes")}
           allSubtypesLabel={t("filters.allSubtypes")}
         />
+        <div>
+          <label className="mb-1 block text-xs text-muted">{t("filters.floor")}</label>
+          <select
+            name="floor"
+            defaultValue={floor ?? ""}
+            className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
+          >
+            <option value="">{t("filters.allFloors")}</option>
+            {floors.map((f) => (
+              <option key={f} value={f}>
+                {f}
+              </option>
+            ))}
+          </select>
+        </div>
         <div>
           <label className="mb-1 block text-xs text-muted">{t("filters.area")}</label>
           <select
@@ -232,14 +253,14 @@ export default async function DashboardPage({
       <div className="rounded-lg border border-border bg-card p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">
-            {facility ? t("chart.byFloorIn", { facility }) : t("chart.title")}
+            {floor ? t("chart.byAreaIn", { floor }) : t("chart.title")}
           </h2>
-          {facility && (
+          {floor && (
             <Link
-              href={`/admin/dashboard${backToFacilitiesQuery ? `?${backToFacilitiesQuery}` : ""}`}
+              href={`/admin/dashboard${backToFloorsQuery ? `?${backToFloorsQuery}` : ""}`}
               className="text-sm text-primary underline"
             >
-              {t("chart.backToBuildings")}
+              {t("chart.backToFloors")}
             </Link>
           )}
         </div>
@@ -247,7 +268,7 @@ export default async function DashboardPage({
           <p className="text-muted">{t("chart.empty")}</p>
         ) : (
           <Suspense>
-            <ComplianceChart data={chartData} locale={locale} drillable={!facility} />
+            <ComplianceChart data={chartData} locale={locale} drillable={!floor} />
           </Suspense>
         )}
       </div>

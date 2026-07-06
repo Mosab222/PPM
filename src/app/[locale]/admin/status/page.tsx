@@ -93,9 +93,6 @@ export default async function OperationalStatusPage({
     }),
   }));
 
-  const summary = summarizeOperational(classified.map((r) => r.bucket as OperationalStatus));
-  const chartData = aggregateOperational(classified, facility ? "floor" : "facility");
-
   const [{ data: types }, { data: subtypes }, { data: allTypesForLabels }, { data: facilityRows }, { data: areaRows }] =
     await Promise.all([
       supabase
@@ -108,8 +105,8 @@ export default async function OperationalStatusPage({
         .select("id, code, parent_type_id, name, arabic_name")
         .eq("active", true)
         .returns<FilterSubtype[]>(),
-      // Unfiltered so a donut can still label equipment referencing a type
-      // that's since been deactivated.
+      // Unfiltered so a donut (or the bar chart) can still label equipment
+      // referencing a type that's since been deactivated.
       supabase.from("equipment_types").select("code, name, arabic_name").returns<TypeLabelRow[]>(),
       supabase.from("equipment").select("facility_code").eq("deleted", false).not("facility_code", "is", null),
       supabase.from("equipment").select("area").eq("deleted", false).not("area", "is", null),
@@ -120,6 +117,17 @@ export default async function OperationalStatusPage({
 
   const typeLabelByCode = new Map(
     (allTypesForLabels ?? []).map((t) => [t.code, (locale === "ar" ? t.arabic_name : t.name) || t.name])
+  );
+
+  const summary = summarizeOperational(classified.map((r) => r.bucket as OperationalStatus));
+  const chartData = aggregateOperational(
+    classified.map((row) => ({
+      bucket: row.bucket,
+      floor: row.floor,
+      typeCode: row.type_code,
+      typeLabel: row.type_code ? typeLabelByCode.get(row.type_code) ?? row.type_code : null,
+    })),
+    type ? "floor" : "type"
   );
 
   // Dynamically derive one donut per type CODE actually present among the
@@ -145,11 +153,14 @@ export default async function OperationalStatusPage({
     }))
     .sort((a, b) => a.typeLabel.localeCompare(b.typeLabel));
 
-  const backToFacilitiesParams = new URLSearchParams();
-  if (type) backToFacilitiesParams.set("type", type);
-  if (subtype) backToFacilitiesParams.set("subtype", subtype);
-  if (area) backToFacilitiesParams.set("area", area);
-  const backToFacilitiesQuery = backToFacilitiesParams.toString();
+  // Subtype is nested under type, so clearing type on the way back up also
+  // clears subtype (mirrors how selecting a new type resets subtype).
+  const backToTypesParams = new URLSearchParams();
+  if (facility) backToTypesParams.set("facility", facility);
+  if (area) backToTypesParams.set("area", area);
+  const backToTypesQuery = backToTypesParams.toString();
+
+  const typeLabel = type ? typeLabelByCode.get(type) ?? type : null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -232,14 +243,14 @@ export default async function OperationalStatusPage({
       <div className="rounded-lg border border-border bg-card p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">
-            {facility ? t("chart.byFloorIn", { facility }) : t("chart.title")}
+            {type ? t("chart.byFloorInType", { type: typeLabel ?? type }) : t("chart.title")}
           </h2>
-          {facility && (
+          {type && (
             <Link
-              href={`/admin/status${backToFacilitiesQuery ? `?${backToFacilitiesQuery}` : ""}`}
+              href={`/admin/status${backToTypesQuery ? `?${backToTypesQuery}` : ""}`}
               className="text-sm text-primary underline"
             >
-              {t("chart.backToFacilities")}
+              {t("chart.backToTypes")}
             </Link>
           )}
         </div>
@@ -247,7 +258,7 @@ export default async function OperationalStatusPage({
           <p className="text-muted">{t("chart.empty")}</p>
         ) : (
           <Suspense>
-            <OperationalChart data={chartData} locale={locale} drillable={!facility} />
+            <OperationalChart data={chartData} locale={locale} drillable={!type} />
           </Suspense>
         )}
       </div>
