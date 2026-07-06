@@ -121,6 +121,7 @@
     "notAuthorized": "You don't have access to this page. Admin role required.",
     "nav": {
       "dashboard": "Dashboard",
+      "status": "Equipment Status",
       "equipment": "Equipment",
       "types": "Types",
       "users": "Users",
@@ -196,6 +197,41 @@
         "allStatuses": "All",
         "apply": "Filter",
         "reset": "Reset"
+      }
+    },
+    "operationalDashboard": {
+      "title": "Equipment Status",
+      "cards": {
+        "total": "Total equipment",
+        "healthy": "Healthy",
+        "needsAttention": "Needs Attention",
+        "outOfService": "Out of Service"
+      },
+      "chart": {
+        "title": "Operational status",
+        "byFloorIn": "Floors in {facility}",
+        "backToFacilities": "← Back to all facilities",
+        "healthy": "Healthy",
+        "needs_attention": "Needs Attention",
+        "out_of_service": "Out of Service",
+        "empty": "No equipment matches the current filters."
+      },
+      "filters": {
+        "facility": "Facility",
+        "type": "Type",
+        "subtype": "Subtype",
+        "area": "Area",
+        "allFacilities": "All facilities",
+        "allTypes": "All types",
+        "allSubtypes": "All subtypes",
+        "allAreas": "All areas",
+        "apply": "Filter",
+        "reset": "Reset"
+      },
+      "donuts": {
+        "sectionTitle": "By equipment type",
+        "empty": "No equipment types have any equipment yet.",
+        "total": "{count} total"
       }
     },
     "users": {

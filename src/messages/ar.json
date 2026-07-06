@@ -121,6 +121,7 @@
     "notAuthorized": "لا تملك صلاحية الوصول إلى هذه الصفحة. يتطلب دور المسؤول.",
     "nav": {
       "dashboard": "لوحة التحكم",
+      "status": "حالة المعدات",
       "equipment": "المعدات",
       "types": "الأنواع",
       "users": "المستخدمون",
@@ -196,6 +197,41 @@
         "allStatuses": "الكل",
         "apply": "تصفية",
         "reset": "إعادة تعيين"
+      }
+    },
+    "operationalDashboard": {
+      "title": "حالة المعدات",
+      "cards": {
+        "total": "إجمالي المعدات",
+        "healthy": "جيدة",
+        "needsAttention": "تحتاج متابعة",
+        "outOfService": "متعطلة"
+      },
+      "chart": {
+        "title": "الحالة التشغيلية",
+        "byFloorIn": "الطوابق في {facility}",
+        "backToFacilities": "→ الرجوع إلى كل المنشآت",
+        "healthy": "جيدة",
+        "needs_attention": "تحتاج متابعة",
+        "out_of_service": "متعطلة",
+        "empty": "لا توجد معدات مطابقة للمرشحات الحالية."
+      },
+      "filters": {
+        "facility": "المنشأة",
+        "type": "النوع",
+        "subtype": "النوع الفرعي",
+        "area": "المنطقة",
+        "allFacilities": "كل المنشآت",
+        "allTypes": "كل الأنواع",
+        "allSubtypes": "كل الأنواع الفرعية",
+        "allAreas": "كل المناطق",
+        "apply": "تصفية",
+        "reset": "إعادة تعيين"
+      },
+      "donuts": {
+        "sectionTitle": "حسب نوع المعدة",
+        "empty": "لا توجد أنواع معدات تحتوي على معدات بعد.",
+        "total": "الإجمالي: {count}"
       }
     },
     "users": {
