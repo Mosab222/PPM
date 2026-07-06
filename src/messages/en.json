@@ -30,7 +30,8 @@
     "room": "Room",
     "roomName": "Room Name",
     "area": "Area",
-    "status": "Status",
+    "schedulingStatus": "Scheduling status",
+    "operationalStatus": "Operational status",
     "weight": "Weight",
     "lastMaintenanceDate": "Last maintenance",
     "nextMaintenanceDate": "Next maintenance due",
@@ -56,6 +57,16 @@
       "overdue": "Overdue",
       "needs_attention": "Needs Attention",
       "decommissioned": "Decommissioned"
+    },
+    "scheduling_status_value": {
+      "done": "Completed",
+      "scheduled": "Scheduled",
+      "overdue": "Overdue"
+    },
+    "operational_status_value": {
+      "healthy": "Healthy",
+      "needs_attention": "Needs Attention",
+      "out_of_service": "Out of Service"
     },
     "banner": {
       "passed": "Maintenance recorded successfully — all checks passed.",
@@ -290,6 +301,9 @@
         "weight": "Weight (kg)",
         "frequency": "Maintenance frequency",
         "status": "Status",
+        "operationalStatus": "Operational status",
+        "operationalStatusHint": "Automatically derived from the latest completed maintenance, unless marked out of service below.",
+        "outOfService": "Out of service",
         "submit": "Create equipment",
         "submitting": "Creating…",
         "save": "Save changes",

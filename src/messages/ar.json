@@ -30,7 +30,8 @@
     "room": "الغرفة",
     "roomName": "اسم الغرفة",
     "area": "المنطقة",
-    "status": "الحالة",
+    "schedulingStatus": "حالة الجدولة",
+    "operationalStatus": "الحالة التشغيلية",
     "weight": "الوزن",
     "lastMaintenanceDate": "آخر صيانة",
     "nextMaintenanceDate": "موعد الصيانة القادم",
@@ -56,6 +57,16 @@
       "overdue": "متأخرة",
       "needs_attention": "تحتاج انتباه",
       "decommissioned": "مسحوبة"
+    },
+    "scheduling_status_value": {
+      "done": "منجزة",
+      "scheduled": "مجدولة",
+      "overdue": "متأخرة"
+    },
+    "operational_status_value": {
+      "healthy": "جيدة",
+      "needs_attention": "تحتاج متابعة",
+      "out_of_service": "متعطلة"
     },
     "banner": {
       "passed": "تم تسجيل الصيانة بنجاح — جميع الفحوصات ناجحة.",
@@ -290,6 +301,9 @@
         "weight": "الوزن (كجم)",
         "frequency": "دورية الصيانة",
         "status": "الحالة",
+        "operationalStatus": "الحالة التشغيلية",
+        "operationalStatusHint": "تُشتق تلقائيًا من آخر صيانة مكتملة، ما لم يتم تعليمها كمعطلة أدناه.",
+        "outOfService": "معطلة",
         "submit": "إنشاء المعدة",
         "submitting": "جارٍ الإنشاء…",
         "save": "حفظ التغييرات",

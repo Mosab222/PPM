@@ -4,8 +4,11 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { formatDate, formatTime } from "@/lib/format";
 import { ResultBadge } from "@/components/result-badge";
-import { StatusBadge } from "@/components/status-badge";
+import { SchedulingStatusBadge } from "@/components/scheduling-status-badge";
+import { OperationalStatusBadge } from "@/components/operational-status-badge";
 import { Link } from "@/i18n/navigation";
+import { classifySchedulingStatus, monthKey, previousMonthKey } from "@/lib/scheduling";
+import { classifyOperationalStatus } from "@/lib/operational-status";
 
 type EquipmentHistoryRow = {
   equipment_code: string;
@@ -17,6 +20,9 @@ type EquipmentHistoryRow = {
   area: string | null;
   weight: number | null;
   status: string | null;
+  created_at: string;
+  maintenance_frequency: string | null;
+  manual_operational_override: string | null;
   last_maintenance_date: string | null;
   next_maintenance_date: string | null;
   maintenance_log_id: string | null;
@@ -77,6 +83,24 @@ export default async function EquipmentPublicPage({
   const user = await getCurrentUser();
   const canExecuteMaintenance = Boolean(user && user.is_active);
 
+  const todayIso = new Date().toISOString();
+  const currentMonth = monthKey(todayIso);
+  const previousMonth = previousMonthKey(currentMonth);
+  const latestLogMonth = equipment.maintenance_date ? monthKey(equipment.maintenance_date) : null;
+
+  const schedulingBucket = classifySchedulingStatus({
+    frequency: equipment.maintenance_frequency,
+    createdAt: equipment.created_at,
+    hasCurrentMonthCompletion: latestLogMonth === currentMonth,
+    hasPreviousMonthCompletion: latestLogMonth === previousMonth,
+    todayIso,
+  });
+
+  const operationalStatus = classifyOperationalStatus({
+    manualOverride: equipment.manual_operational_override,
+    latestCompletedResult: equipment.result,
+  });
+
   const details: Array<[string, React.ReactNode]> = [
     [t("subtype"), equipment.subtype_code ?? "—"],
     [t("facility"), equipment.facility_code ?? "—"],
@@ -85,7 +109,6 @@ export default async function EquipmentPublicPage({
     [t("roomName"), equipment.room_name ?? "—"],
     [t("area"), equipment.area ?? "—"],
     [t("weight"), equipment.weight != null ? String(equipment.weight) : "—"],
-    [t("status"), equipment.status ? <StatusBadge status={equipment.status} /> : "—"],
     [t("lastMaintenanceDate"), formatDate(equipment.last_maintenance_date, locale)],
     [t("nextMaintenanceDate"), formatDate(equipment.next_maintenance_date, locale)],
   ];
@@ -113,6 +136,16 @@ export default async function EquipmentPublicPage({
         <p className="mt-1 break-all font-mono text-2xl font-bold tracking-wide text-primary">
           {equipment.equipment_code}
         </p>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted">{t("schedulingStatus")}</span>
+            <SchedulingStatusBadge status={schedulingBucket} />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted">{t("operationalStatus")}</span>
+            <OperationalStatusBadge status={operationalStatus} />
+          </div>
+        </div>
         {canExecuteMaintenance && (
           <Link
             href={`/eq/${id}/execute`}

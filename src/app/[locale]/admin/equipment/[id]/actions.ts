@@ -21,6 +21,7 @@ export type UpdateEquipmentInput = {
   weight: number | null;
   maintenanceFrequency: string;
   status: string;
+  outOfService: boolean;
 };
 
 export type UpdateEquipmentResult = {
@@ -67,6 +68,7 @@ export async function updateEquipment(input: UpdateEquipmentInput): Promise<Upda
       weight: input.weight,
       maintenance_frequency: input.maintenanceFrequency,
       status: input.status,
+      manual_operational_override: input.outOfService ? "out_of_service" : null,
     })
     .eq("id", input.id);
 

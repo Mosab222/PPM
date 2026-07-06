@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { updateEquipment } from "@/app/[locale]/admin/equipment/[id]/actions";
+import { OperationalStatusBadge } from "@/components/operational-status-badge";
+import type { OperationalStatus } from "@/lib/operational-status";
 
 export type EditableEquipment = {
   id: string;
@@ -15,12 +17,19 @@ export type EditableEquipment = {
   weight: number | null;
   maintenance_frequency: string | null;
   status: string | null;
+  manual_operational_override: string | null;
 };
 
 const FREQUENCIES = ["weekly", "monthly", "quarterly", "semiannual", "yearly"] as const;
 const STATUSES = ["compliant", "due", "overdue", "needs_attention", "decommissioned"] as const;
 
-export function EquipmentEditForm({ equipment }: { equipment: EditableEquipment }) {
+export function EquipmentEditForm({
+  equipment,
+  operationalStatus,
+}: {
+  equipment: EditableEquipment;
+  operationalStatus: OperationalStatus;
+}) {
   const t = useTranslations("admin.equipment.form");
   const tStatus = useTranslations("equipment.status_value");
   const [facilityCode, setFacilityCode] = useState(equipment.facility_code ?? "");
@@ -31,6 +40,9 @@ export function EquipmentEditForm({ equipment }: { equipment: EditableEquipment 
   const [weight, setWeight] = useState(equipment.weight != null ? String(equipment.weight) : "");
   const [frequency, setFrequency] = useState(equipment.maintenance_frequency ?? "monthly");
   const [status, setStatus] = useState(equipment.status ?? "compliant");
+  const [outOfService, setOutOfService] = useState(
+    equipment.manual_operational_override === "out_of_service"
+  );
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -64,6 +76,7 @@ export function EquipmentEditForm({ equipment }: { equipment: EditableEquipment 
         weight: weightValue,
         maintenanceFrequency: frequency,
         status,
+        outOfService,
       });
       if (result.error) {
         setError(result.error);
@@ -173,6 +186,22 @@ export function EquipmentEditForm({ equipment }: { equipment: EditableEquipment 
             ))}
           </select>
         </div>
+      </div>
+
+      <div className="rounded-md border border-border p-3">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-sm font-medium">{t("operationalStatus")}</span>
+          <OperationalStatusBadge status={operationalStatus} />
+        </div>
+        <p className="mt-1 text-xs text-muted">{t("operationalStatusHint")}</p>
+        <label className="mt-3 flex items-center gap-2 text-sm font-medium">
+          <input
+            type="checkbox"
+            checked={outOfService}
+            onChange={(e) => setOutOfService(e.target.checked)}
+          />
+          {t("outOfService")}
+        </label>
       </div>
 
       {error && <p className="text-sm text-red-700">{t(`errors.${error}`)}</p>}
