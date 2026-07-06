@@ -7,9 +7,11 @@ import { formatDate, formatTime } from "@/lib/format";
 export type ReportRow = {
   id: string;
   equipmentCode: string;
-  building: string | null;
+  facility: string | null;
   floor: string | null;
-  location: string | null;
+  room: string | null;
+  roomName: string | null;
+  area: string | null;
   subtype: string | null;
   maintenanceDate: string | null;
   maintenanceTime: string | null;
@@ -26,9 +28,11 @@ export function ExportExcelButton({ rows, locale }: { rows: ReportRow[]; locale:
   function handleExport() {
     const data = rows.map((row) => ({
       [tTable("code")]: row.equipmentCode,
-      [tTable("building")]: row.building ?? "",
+      [tTable("facility")]: row.facility ?? "",
       [tTable("floor")]: row.floor ?? "",
-      [tTable("location")]: row.location ?? "",
+      [tTable("room")]: row.room ?? "",
+      [tTable("roomName")]: row.roomName ?? "",
+      [tTable("area")]: row.area ?? "",
       [tTable("subtype")]: row.subtype ?? "",
       [tTable("date")]: formatDate(row.maintenanceDate, locale),
       [tTable("time")]: formatTime(row.maintenanceTime, locale),

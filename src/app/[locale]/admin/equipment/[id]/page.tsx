@@ -15,7 +15,7 @@ export default async function EditEquipmentPage({
   const supabase = await createClient();
   const { data: equipment } = await supabase
     .from("equipment")
-    .select("id, building_code, floor, location, weight, maintenance_frequency, status")
+    .select("id, facility_code, floor, room_code, room_name, area, weight, maintenance_frequency, status")
     .eq("id", id)
     .eq("deleted", false)
     .single<EditableEquipment>();

@@ -4,22 +4,27 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
 
-const SEGMENT_PATTERN = /^[A-Z0-9]+$/;
 const FREQUENCIES = ["weekly", "monthly", "quarterly", "semiannual", "yearly"];
 const STATUSES = ["compliant", "due", "overdue", "needs_attention", "decommissioned"];
 
+function normalizeSegment(value: string): string {
+  return value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
 export type UpdateEquipmentInput = {
   id: string;
-  buildingCode: string;
+  facilityCode: string;
   floor: string;
-  location: string;
+  room: string;
+  roomName: string;
+  area: string;
   weight: number | null;
   maintenanceFrequency: string;
   status: string;
 };
 
 export type UpdateEquipmentResult = {
-  error?: "unauthorized" | "invalidSegment" | "invalidWeight" | "submitError";
+  error?: "unauthorized" | "invalidSegment" | "invalidWeight" | "missingFields" | "submitError";
 };
 
 export async function updateEquipment(input: UpdateEquipmentInput): Promise<UpdateEquipmentResult> {
@@ -28,12 +33,18 @@ export async function updateEquipment(input: UpdateEquipmentInput): Promise<Upda
     return { error: "unauthorized" };
   }
 
-  const building = input.buildingCode.trim().toUpperCase();
-  const floor = input.floor.trim().toUpperCase();
-  const location = input.location.trim().toUpperCase();
+  const facility = normalizeSegment(input.facilityCode);
+  const floor = normalizeSegment(input.floor);
+  const room = normalizeSegment(input.room);
 
-  if (![building, floor, location].every((segment) => SEGMENT_PATTERN.test(segment))) {
+  if (![facility, floor, room].every((segment) => segment.length > 0)) {
     return { error: "invalidSegment" };
+  }
+
+  const roomName = input.roomName.trim();
+  const area = input.area.trim();
+  if (!roomName || !area) {
+    return { error: "missingFields" };
   }
 
   if (input.weight == null || Number.isNaN(input.weight) || input.weight <= 0) {
@@ -48,9 +59,11 @@ export async function updateEquipment(input: UpdateEquipmentInput): Promise<Upda
   const { error } = await supabase
     .from("equipment")
     .update({
-      building_code: building,
+      facility_code: facility,
       floor,
-      location,
+      room_code: room,
+      room_name: roomName,
+      area,
       weight: input.weight,
       maintenance_frequency: input.maintenanceFrequency,
       status: input.status,

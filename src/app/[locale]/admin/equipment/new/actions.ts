@@ -6,19 +6,26 @@ import { getCurrentUser } from "@/lib/supabase/auth";
 export type CreateEquipmentInput = {
   typeCode: string;
   subtypeCode: string;
-  buildingCode: string;
+  facilityCode: string;
   floor: string;
-  location: string;
+  room: string;
+  roomName: string;
+  area: string;
   weight: number | null;
   maintenanceFrequency: string;
 };
 
 export type CreateEquipmentResult = {
   equipmentId?: string;
-  error?: "unauthorized" | "invalidSegment" | "submitError";
+  error?: "unauthorized" | "invalidSegment" | "missingFields" | "submitError";
 };
 
-const SEGMENT_PATTERN = /^[A-Z0-9]+$/;
+// Strips anything that isn't a letter or digit rather than rejecting the
+// input outright, e.g. "G-1014" -> "G1014" -- matches the code-generation
+// spec, which never wants dashes/spaces baked into an ID segment.
+function normalizeSegment(value: string): string {
+  return value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
 
 export async function createEquipment(
   input: CreateEquipmentInput
@@ -28,12 +35,18 @@ export async function createEquipment(
     return { error: "unauthorized" };
   }
 
-  const building = input.buildingCode.trim().toUpperCase();
-  const floor = input.floor.trim().toUpperCase();
-  const location = input.location.trim().toUpperCase();
+  const facility = normalizeSegment(input.facilityCode);
+  const floor = normalizeSegment(input.floor);
+  const room = normalizeSegment(input.room);
 
-  if (![building, floor, location].every((segment) => SEGMENT_PATTERN.test(segment))) {
+  if (![facility, floor, room].every((segment) => segment.length > 0)) {
     return { error: "invalidSegment" };
+  }
+
+  const roomName = input.roomName.trim();
+  const area = input.area.trim();
+  if (!roomName || !area) {
+    return { error: "missingFields" };
   }
 
   const supabase = await createClient();
@@ -51,16 +64,18 @@ export async function createEquipment(
   }
 
   const paddedSequence = String(sequenceNumber).padStart(4, "0");
-  const equipmentId = `${input.typeCode}-${input.subtypeCode}-${paddedSequence}-${building}-${floor}-${location}`;
+  const equipmentId = `${facility}-${input.typeCode}-${input.subtypeCode}-${paddedSequence}-${floor}-${room}`;
 
   const { error: insertError } = await supabase.from("equipment").insert({
     id: equipmentId,
     type_code: input.typeCode,
     subtype_code: input.subtypeCode,
     sequence_number: sequenceNumber,
-    building_code: building,
+    facility_code: facility,
     floor,
-    location,
+    room_code: room,
+    room_name: roomName,
+    area,
     weight: input.weight,
     maintenance_frequency: input.maintenanceFrequency,
     created_by: user.id,

@@ -8,9 +8,9 @@ type EquipmentRow = {
   id: string;
   type_code: string;
   subtype_code: string;
-  building_code: string | null;
+  facility_code: string | null;
   floor: string | null;
-  location: string | null;
+  room_code: string | null;
   status: string | null;
   next_maintenance_date: string | null;
 };
@@ -36,10 +36,10 @@ export default async function EquipmentListPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ q?: string; building?: string; subtype?: string; status?: string }>;
+  searchParams: Promise<{ q?: string; facility?: string; subtype?: string; status?: string }>;
 }) {
   const { locale } = await params;
-  const { q, building, subtype, status } = await searchParams;
+  const { q, facility, subtype, status } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("admin.equipment");
   const tStatus = await getTranslations("equipment.status_value");
@@ -67,10 +67,10 @@ export default async function EquipmentListPage({
   let query = supabase.from("equipment").select("*").eq("deleted", false);
 
   if (q) {
-    query = query.or(`id.ilike.%${q}%,location.ilike.%${q}%`);
+    query = query.or(`id.ilike.%${q}%,room_code.ilike.%${q}%`);
   }
-  if (building) {
-    query = query.ilike("building_code", `%${building}%`);
+  if (facility) {
+    query = query.ilike("facility_code", `%${facility}%`);
   }
   if (subtype) {
     query = query.eq("subtype_code", subtype);
@@ -107,11 +107,11 @@ export default async function EquipmentListPage({
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs text-muted">{t("filterBuilding")}</label>
+          <label className="mb-1 block text-xs text-muted">{t("filterFacility")}</label>
           <input
             type="text"
-            name="building"
-            defaultValue={building ?? ""}
+            name="facility"
+            defaultValue={facility ?? ""}
             className="w-32 rounded-md border border-border bg-background px-3 py-1.5 text-sm"
           />
         </div>
@@ -159,9 +159,9 @@ export default async function EquipmentListPage({
             <tr className="border-b border-border text-start text-muted">
               <th className="px-4 py-2 text-start font-medium">{t("table.code")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.type")}</th>
-              <th className="px-4 py-2 text-start font-medium">{t("table.building")}</th>
+              <th className="px-4 py-2 text-start font-medium">{t("table.facility")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.floor")}</th>
-              <th className="px-4 py-2 text-start font-medium">{t("table.location")}</th>
+              <th className="px-4 py-2 text-start font-medium">{t("table.room")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.status")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.nextMaintenance")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.view")}</th>
@@ -174,9 +174,9 @@ export default async function EquipmentListPage({
               <tr key={row.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-2 font-mono">{row.id}</td>
                 <td className="px-4 py-2">{subtypeLabels.get(row.subtype_code) ?? row.subtype_code}</td>
-                <td className="px-4 py-2">{row.building_code ?? "—"}</td>
+                <td className="px-4 py-2">{row.facility_code ?? "—"}</td>
                 <td className="px-4 py-2">{row.floor ?? "—"}</td>
-                <td className="px-4 py-2">{row.location ?? "—"}</td>
+                <td className="px-4 py-2">{row.room_code ?? "—"}</td>
                 <td className="px-4 py-2">
                   {row.status ? <StatusBadge status={row.status} /> : "—"}
                 </td>

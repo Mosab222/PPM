@@ -20,16 +20,17 @@ export default async function DashboardPage({
 }: {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{
-    building?: string;
+    facility?: string;
     type?: string;
     subtype?: string;
+    area?: string;
     status?: string;
     from?: string;
     to?: string;
   }>;
 }) {
   const { locale } = await params;
-  const { building, type, subtype, status, from, to } = await searchParams;
+  const { facility, type, subtype, area, status, from, to } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("admin.dashboard");
   const tStatus = await getTranslations("equipment.status_value");
@@ -38,12 +39,13 @@ export default async function DashboardPage({
 
   let query = supabase
     .from("equipment")
-    .select("status, next_maintenance_date, building_code, floor, subtype_code")
+    .select("status, next_maintenance_date, facility_code, floor, subtype_code")
     .eq("deleted", false);
 
-  if (building) query = query.eq("building_code", building);
+  if (facility) query = query.eq("facility_code", facility);
   if (type) query = query.eq("type_code", type);
   if (subtype) query = query.eq("subtype_code", subtype);
+  if (area) query = query.eq("area", area);
   if (status) query = query.eq("status", status);
   if (from) query = query.gte("next_maintenance_date", from);
   if (to) query = query.lte("next_maintenance_date", to);
@@ -52,9 +54,9 @@ export default async function DashboardPage({
   const rows = equipment ?? [];
 
   const summary = summarizeCompliance(rows);
-  const chartData = aggregateCompliance(rows, building ? "floor" : "building");
+  const chartData = aggregateCompliance(rows, facility ? "floor" : "facility");
 
-  const [{ data: types }, { data: subtypes }, { data: buildingRows }] = await Promise.all([
+  const [{ data: types }, { data: subtypes }, { data: facilityRows }, { data: areaRows }] = await Promise.all([
     supabase
       .from("equipment_types")
       .select("id, code, name, arabic_name")
@@ -65,20 +67,25 @@ export default async function DashboardPage({
       .select("id, code, parent_type_id, name, arabic_name")
       .eq("active", true)
       .returns<FilterSubtype[]>(),
-    supabase.from("equipment").select("building_code").eq("deleted", false).not("building_code", "is", null),
+    supabase.from("equipment").select("facility_code").eq("deleted", false).not("facility_code", "is", null),
+    supabase.from("equipment").select("area").eq("deleted", false).not("area", "is", null),
   ]);
 
-  const buildings = Array.from(
-    new Set((buildingRows ?? []).map((r) => r.building_code as string))
+  const facilities = Array.from(
+    new Set((facilityRows ?? []).map((r) => r.facility_code as string))
+  ).sort();
+  const areas = Array.from(
+    new Set((areaRows ?? []).map((r) => r.area as string))
   ).sort();
 
-  const backToBuildingsParams = new URLSearchParams();
-  if (type) backToBuildingsParams.set("type", type);
-  if (subtype) backToBuildingsParams.set("subtype", subtype);
-  if (status) backToBuildingsParams.set("status", status);
-  if (from) backToBuildingsParams.set("from", from);
-  if (to) backToBuildingsParams.set("to", to);
-  const backToBuildingsQuery = backToBuildingsParams.toString();
+  const backToFacilitiesParams = new URLSearchParams();
+  if (type) backToFacilitiesParams.set("type", type);
+  if (subtype) backToFacilitiesParams.set("subtype", subtype);
+  if (area) backToFacilitiesParams.set("area", area);
+  if (status) backToFacilitiesParams.set("status", status);
+  if (from) backToFacilitiesParams.set("from", from);
+  if (to) backToFacilitiesParams.set("to", to);
+  const backToFacilitiesQuery = backToFacilitiesParams.toString();
 
   return (
     <div className="flex flex-col gap-6">
@@ -89,16 +96,16 @@ export default async function DashboardPage({
         className="flex flex-wrap items-end gap-3 rounded-lg border border-border bg-card p-4"
       >
         <div>
-          <label className="mb-1 block text-xs text-muted">{t("filters.building")}</label>
+          <label className="mb-1 block text-xs text-muted">{t("filters.facility")}</label>
           <select
-            name="building"
-            defaultValue={building ?? ""}
+            name="facility"
+            defaultValue={facility ?? ""}
             className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
           >
-            <option value="">{t("filters.allBuildings")}</option>
-            {buildings.map((b) => (
-              <option key={b} value={b}>
-                {b}
+            <option value="">{t("filters.allFacilities")}</option>
+            {facilities.map((f) => (
+              <option key={f} value={f}>
+                {f}
               </option>
             ))}
           </select>
@@ -114,6 +121,21 @@ export default async function DashboardPage({
           allTypesLabel={t("filters.allTypes")}
           allSubtypesLabel={t("filters.allSubtypes")}
         />
+        <div>
+          <label className="mb-1 block text-xs text-muted">{t("filters.area")}</label>
+          <select
+            name="area"
+            defaultValue={area ?? ""}
+            className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
+          >
+            <option value="">{t("filters.allAreas")}</option>
+            {areas.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+        </div>
         <div>
           <label className="mb-1 block text-xs text-muted">{t("filters.status")}</label>
           <select
@@ -183,11 +205,11 @@ export default async function DashboardPage({
       <div className="rounded-lg border border-border bg-card p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">
-            {building ? t("chart.byFloorIn", { building }) : t("chart.title")}
+            {facility ? t("chart.byFloorIn", { facility }) : t("chart.title")}
           </h2>
-          {building && (
+          {facility && (
             <Link
-              href={`/admin/dashboard${backToBuildingsQuery ? `?${backToBuildingsQuery}` : ""}`}
+              href={`/admin/dashboard${backToFacilitiesQuery ? `?${backToFacilitiesQuery}` : ""}`}
               className="text-sm text-primary underline"
             >
               {t("chart.backToBuildings")}
@@ -198,7 +220,7 @@ export default async function DashboardPage({
           <p className="text-muted">{t("chart.empty")}</p>
         ) : (
           <Suspense>
-            <ComplianceChart data={chartData} locale={locale} drillable={!building} />
+            <ComplianceChart data={chartData} locale={locale} drillable={!facility} />
           </Suspense>
         )}
       </div>

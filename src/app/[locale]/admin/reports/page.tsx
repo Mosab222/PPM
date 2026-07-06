@@ -8,9 +8,11 @@ import { Link } from "@/i18n/navigation";
 
 type EquipmentLookup = {
   id: string;
-  building_code: string | null;
+  facility_code: string | null;
   floor: string | null;
-  location: string | null;
+  room_code: string | null;
+  room_name: string | null;
+  area: string | null;
   type_code: string | null;
   subtype_code: string | null;
   status: string | null;
@@ -38,9 +40,10 @@ export default async function ReportsPage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<{
     q?: string;
-    building?: string;
+    facility?: string;
     type?: string;
     subtype?: string;
+    area?: string;
     status?: string;
     technician?: string;
     from?: string;
@@ -48,7 +51,7 @@ export default async function ReportsPage({
   }>;
 }) {
   const { locale } = await params;
-  const { q, building, type, subtype, status, technician, from, to } = await searchParams;
+  const { q, facility, type, subtype, area, status, technician, from, to } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("admin.reports");
   const tStatus = await getTranslations("equipment.status_value");
@@ -64,7 +67,7 @@ export default async function ReportsPage({
   ] = await Promise.all([
     supabase
       .from("equipment")
-      .select("id, building_code, floor, location, type_code, subtype_code, status")
+      .select("id, facility_code, floor, room_code, room_name, area, type_code, subtype_code, status")
       .eq("deleted", false)
       .returns<EquipmentLookup[]>(),
     supabase
@@ -95,16 +98,20 @@ export default async function ReportsPage({
   const subtypeLabels = new Map(
     (allSubtypesForLabels ?? []).map((s) => [s.code, (locale === "ar" ? s.arabic_name : s.name) || s.name])
   );
-  const buildings = Array.from(
-    new Set((equipmentRows ?? []).map((e) => e.building_code).filter((b): b is string => Boolean(b)))
+  const facilities = Array.from(
+    new Set((equipmentRows ?? []).map((e) => e.facility_code).filter((f): f is string => Boolean(f)))
+  ).sort();
+  const areas = Array.from(
+    new Set((equipmentRows ?? []).map((e) => e.area).filter((a): a is string => Boolean(a)))
   ).sort();
 
   let allowedEquipmentIds: string[] | null = null;
-  if (building || type || subtype || status) {
+  if (facility || type || subtype || area || status) {
     let filtered = equipmentRows ?? [];
-    if (building) filtered = filtered.filter((e) => e.building_code === building);
+    if (facility) filtered = filtered.filter((e) => e.facility_code === facility);
     if (type) filtered = filtered.filter((e) => e.type_code === type);
     if (subtype) filtered = filtered.filter((e) => e.subtype_code === subtype);
+    if (area) filtered = filtered.filter((e) => e.area === area);
     if (status) filtered = filtered.filter((e) => e.status === status);
     allowedEquipmentIds = filtered.map((e) => e.id);
   }
@@ -136,9 +143,11 @@ export default async function ReportsPage({
     return {
       id: log.id,
       equipmentCode: log.equipment_id,
-      building: eq?.building_code ?? null,
+      facility: eq?.facility_code ?? null,
       floor: eq?.floor ?? null,
-      location: eq?.location ?? null,
+      room: eq?.room_code ?? null,
+      roomName: eq?.room_name ?? null,
+      area: eq?.area ?? null,
       subtype: eq?.subtype_code ? subtypeLabels.get(eq.subtype_code) ?? eq.subtype_code : null,
       maintenanceDate: log.maintenance_date,
       maintenanceTime: log.maintenance_time,
@@ -170,16 +179,16 @@ export default async function ReportsPage({
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs text-muted">{t("filters.building")}</label>
+          <label className="mb-1 block text-xs text-muted">{t("filters.facility")}</label>
           <select
-            name="building"
-            defaultValue={building ?? ""}
+            name="facility"
+            defaultValue={facility ?? ""}
             className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
           >
-            <option value="">{t("filters.allBuildings")}</option>
-            {buildings.map((b) => (
-              <option key={b} value={b}>
-                {b}
+            <option value="">{t("filters.allFacilities")}</option>
+            {facilities.map((f) => (
+              <option key={f} value={f}>
+                {f}
               </option>
             ))}
           </select>
@@ -195,6 +204,21 @@ export default async function ReportsPage({
           allTypesLabel={t("filters.allTypes")}
           allSubtypesLabel={t("filters.allSubtypes")}
         />
+        <div>
+          <label className="mb-1 block text-xs text-muted">{t("filters.area")}</label>
+          <select
+            name="area"
+            defaultValue={area ?? ""}
+            className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
+          >
+            <option value="">{t("filters.allAreas")}</option>
+            {areas.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+        </div>
         <div>
           <label className="mb-1 block text-xs text-muted">{t("filters.status")}</label>
           <select
@@ -264,9 +288,11 @@ export default async function ReportsPage({
           <thead>
             <tr className="border-b border-border text-start text-muted">
               <th className="px-4 py-2 text-start font-medium">{t("table.code")}</th>
-              <th className="px-4 py-2 text-start font-medium">{t("table.building")}</th>
+              <th className="px-4 py-2 text-start font-medium">{t("table.facility")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.floor")}</th>
-              <th className="px-4 py-2 text-start font-medium">{t("table.location")}</th>
+              <th className="px-4 py-2 text-start font-medium">{t("table.room")}</th>
+              <th className="px-4 py-2 text-start font-medium">{t("table.roomName")}</th>
+              <th className="px-4 py-2 text-start font-medium">{t("table.area")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.subtype")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.date")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.time")}</th>
@@ -279,9 +305,11 @@ export default async function ReportsPage({
             {rows.map((row) => (
               <tr key={row.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-2 font-mono">{row.equipmentCode}</td>
-                <td className="px-4 py-2">{row.building ?? "—"}</td>
+                <td className="px-4 py-2">{row.facility ?? "—"}</td>
                 <td className="px-4 py-2">{row.floor ?? "—"}</td>
-                <td className="px-4 py-2">{row.location ?? "—"}</td>
+                <td className="px-4 py-2">{row.room ?? "—"}</td>
+                <td className="px-4 py-2">{row.roomName ?? "—"}</td>
+                <td className="px-4 py-2">{row.area ?? "—"}</td>
                 <td className="px-4 py-2">{row.subtype ?? "—"}</td>
                 <td className="px-4 py-2">{formatDate(row.maintenanceDate, locale)}</td>
                 <td className="px-4 py-2">{formatTime(row.maintenanceTime, locale)}</td>

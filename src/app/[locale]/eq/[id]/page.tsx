@@ -10,9 +10,11 @@ import { Link } from "@/i18n/navigation";
 type EquipmentHistoryRow = {
   equipment_code: string;
   subtype_code: string | null;
-  building_code: string | null;
+  facility_code: string | null;
   floor: string | null;
-  location: string | null;
+  room_code: string | null;
+  room_name: string | null;
+  area: string | null;
   weight: number | null;
   status: string | null;
   last_maintenance_date: string | null;
@@ -77,9 +79,11 @@ export default async function EquipmentPublicPage({
 
   const details: Array<[string, React.ReactNode]> = [
     [t("subtype"), equipment.subtype_code ?? "—"],
-    [t("building"), equipment.building_code ?? "—"],
+    [t("facility"), equipment.facility_code ?? "—"],
     [t("floor"), equipment.floor ?? "—"],
-    [t("location"), equipment.location ?? "—"],
+    [t("room"), equipment.room_code ?? "—"],
+    [t("roomName"), equipment.room_name ?? "—"],
+    [t("area"), equipment.area ?? "—"],
     [t("weight"), equipment.weight != null ? String(equipment.weight) : "—"],
     [t("status"), equipment.status ? <StatusBadge status={equipment.status} /> : "—"],
     [t("lastMaintenanceDate"), formatDate(equipment.last_maintenance_date, locale)],

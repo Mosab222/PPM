@@ -7,9 +7,11 @@ import { updateEquipment } from "@/app/[locale]/admin/equipment/[id]/actions";
 
 export type EditableEquipment = {
   id: string;
-  building_code: string | null;
+  facility_code: string | null;
   floor: string | null;
-  location: string | null;
+  room_code: string | null;
+  room_name: string | null;
+  area: string | null;
   weight: number | null;
   maintenance_frequency: string | null;
   status: string | null;
@@ -21,9 +23,11 @@ const STATUSES = ["compliant", "due", "overdue", "needs_attention", "decommissio
 export function EquipmentEditForm({ equipment }: { equipment: EditableEquipment }) {
   const t = useTranslations("admin.equipment.form");
   const tStatus = useTranslations("equipment.status_value");
-  const [buildingCode, setBuildingCode] = useState(equipment.building_code ?? "");
+  const [facilityCode, setFacilityCode] = useState(equipment.facility_code ?? "");
   const [floor, setFloor] = useState(equipment.floor ?? "");
-  const [location, setLocation] = useState(equipment.location ?? "");
+  const [room, setRoom] = useState(equipment.room_code ?? "");
+  const [roomName, setRoomName] = useState(equipment.room_name ?? "");
+  const [area, setArea] = useState(equipment.area ?? "");
   const [weight, setWeight] = useState(equipment.weight != null ? String(equipment.weight) : "");
   const [frequency, setFrequency] = useState(equipment.maintenance_frequency ?? "monthly");
   const [status, setStatus] = useState(equipment.status ?? "compliant");
@@ -36,14 +40,15 @@ export function EquipmentEditForm({ equipment }: { equipment: EditableEquipment 
     setSaved(false);
 
     const weightValue = Number(weight);
-    if (
-      !buildingCode.trim() ||
-      !floor.trim() ||
-      !location.trim() ||
-      !weight.trim() ||
-      Number.isNaN(weightValue) ||
-      weightValue <= 0
-    ) {
+    if (!facilityCode.trim() || !floor.trim() || !room.trim()) {
+      setError("invalidSegment");
+      return;
+    }
+    if (!roomName.trim() || !area.trim()) {
+      setError("missingFields");
+      return;
+    }
+    if (!weight.trim() || Number.isNaN(weightValue) || weightValue <= 0) {
       setError("invalidWeight");
       return;
     }
@@ -51,9 +56,11 @@ export function EquipmentEditForm({ equipment }: { equipment: EditableEquipment 
     startTransition(async () => {
       const result = await updateEquipment({
         id: equipment.id,
-        buildingCode,
+        facilityCode,
         floor,
-        location,
+        room,
+        roomName,
+        area,
         weight: weightValue,
         maintenanceFrequency: frequency,
         status,
@@ -75,12 +82,13 @@ export function EquipmentEditForm({ equipment }: { equipment: EditableEquipment 
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-medium">{t("building")}</label>
+          <label className="mb-1 block text-sm font-medium">{t("facility")}</label>
           <input
             type="text"
-            value={buildingCode}
-            onChange={(e) => setBuildingCode(e.target.value)}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            value={facilityCode}
+            onChange={(e) => setFacilityCode(e.target.value)}
+            dir="ltr"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
           />
         </div>
 
@@ -90,16 +98,38 @@ export function EquipmentEditForm({ equipment }: { equipment: EditableEquipment 
             type="text"
             value={floor}
             onChange={(e) => setFloor(e.target.value)}
+            dir="ltr"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium">{t("room")}</label>
+          <input
+            type="text"
+            value={room}
+            onChange={(e) => setRoom(e.target.value)}
+            dir="ltr"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium">{t("roomName")}</label>
+          <input
+            type="text"
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
             className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">{t("location")}</label>
+          <label className="mb-1 block text-sm font-medium">{t("area")}</label>
           <input
             type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            value={area}
+            onChange={(e) => setArea(e.target.value)}
             className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
           />
         </div>

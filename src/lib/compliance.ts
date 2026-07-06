@@ -3,7 +3,7 @@ export type ComplianceBucket = "done" | "scheduled" | "overdue";
 export type EquipmentForCompliance = {
   status: string | null;
   next_maintenance_date: string | null;
-  building_code: string | null;
+  facility_code: string | null;
   floor: string | null;
 };
 
@@ -76,7 +76,7 @@ export function summarizeCompliance(rows: EquipmentForCompliance[]): ComplianceS
 
 export function aggregateCompliance(
   rows: EquipmentForCompliance[],
-  groupBy: "building" | "floor"
+  groupBy: "facility" | "floor"
 ): ComplianceChartDatum[] {
   const todayIso = toIsoDate(new Date());
   const map = new Map<string, ComplianceChartDatum>();
@@ -85,7 +85,7 @@ export function aggregateCompliance(
     const bucket = classifyCompliance(row, todayIso);
     if (!bucket) continue;
 
-    const label = (groupBy === "building" ? row.building_code : row.floor) || "—";
+    const label = (groupBy === "facility" ? row.facility_code : row.floor) || "—";
     if (!map.has(label)) {
       map.set(label, { label, done: 0, scheduled: 0, overdue: 0 });
     }

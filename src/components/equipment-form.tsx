@@ -24,6 +24,10 @@ export type EquipmentSubtype = {
 
 const FREQUENCIES = ["weekly", "monthly", "quarterly", "semiannual", "yearly"] as const;
 
+function normalizeSegment(value: string): string {
+  return value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
 export function EquipmentForm({
   types,
   subtypes,
@@ -37,9 +41,11 @@ export function EquipmentForm({
   const tSuccess = useTranslations("admin.equipment.success");
   const [typeId, setTypeId] = useState("");
   const [subtypeId, setSubtypeId] = useState("");
-  const [buildingCode, setBuildingCode] = useState("");
+  const [facilityCode, setFacilityCode] = useState("");
   const [floor, setFloor] = useState("");
-  const [location, setLocation] = useState("");
+  const [room, setRoom] = useState("");
+  const [roomName, setRoomName] = useState("");
+  const [area, setArea] = useState("");
   const [weight, setWeight] = useState("");
   const [frequency, setFrequency] = useState<string>("monthly");
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +56,15 @@ export function EquipmentForm({
     () => subtypes.filter((s) => s.parent_type_id === typeId),
     [subtypes, typeId]
   );
+
+  const previewCode = useMemo(() => {
+    const type = types.find((t) => t.id === typeId);
+    const subtype = subtypes.find((s) => s.id === subtypeId);
+    const facilitySeg = normalizeSegment(facilityCode) || "—";
+    const floorSeg = normalizeSegment(floor) || "—";
+    const roomSeg = normalizeSegment(room) || "—";
+    return `${facilitySeg}-${type?.code ?? "—"}-${subtype?.code ?? "—"}-XXXX-${floorSeg}-${roomSeg}`;
+  }, [types, subtypes, typeId, subtypeId, facilityCode, floor, room]);
 
   function typeLabel(type: EquipmentType) {
     return (locale === "ar" ? type.arabic_name : type.name) || type.name;
@@ -75,9 +90,11 @@ export function EquipmentForm({
   function resetForm() {
     setTypeId("");
     setSubtypeId("");
-    setBuildingCode("");
+    setFacilityCode("");
     setFloor("");
-    setLocation("");
+    setRoom("");
+    setRoomName("");
+    setArea("");
     setWeight("");
     setFrequency("monthly");
     setError(null);
@@ -92,9 +109,9 @@ export function EquipmentForm({
     if (
       !type ||
       !subtype ||
-      !buildingCode.trim() ||
-      !floor.trim() ||
-      !location.trim() ||
+      !normalizeSegment(facilityCode) ||
+      !normalizeSegment(floor) ||
+      !normalizeSegment(room) ||
       !weight.trim() ||
       Number.isNaN(weightValue) ||
       weightValue <= 0
@@ -103,14 +120,21 @@ export function EquipmentForm({
       return;
     }
 
+    if (!roomName.trim() || !area.trim()) {
+      setError("missingFields");
+      return;
+    }
+
     setError(null);
     startTransition(async () => {
       const result = await createEquipment({
         typeCode: type.code,
         subtypeCode: subtype.code,
-        buildingCode,
+        facilityCode,
         floor,
-        location,
+        room,
+        roomName,
+        area,
         weight: weightValue,
         maintenanceFrequency: frequency,
       });
@@ -151,7 +175,25 @@ export function EquipmentForm({
 
   return (
     <div className="flex flex-col gap-4">
+      <div>
+        <label className="mb-1 block text-sm font-medium">{t("codePreview")}</label>
+        <p dir="ltr" className="break-all rounded-md border border-border bg-background px-3 py-2 text-center font-mono text-sm font-semibold text-primary">
+          {previewCode}
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label className="mb-1 block text-sm font-medium">{t("facility")}</label>
+          <input
+            type="text"
+            value={facilityCode}
+            onChange={(e) => setFacilityCode(e.target.value)}
+            dir="ltr"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
+          />
+        </div>
+
         <div>
           <label className="mb-1 block text-sm font-medium">{t("type")}</label>
           <select
@@ -186,31 +228,43 @@ export function EquipmentForm({
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">{t("building")}</label>
-          <input
-            type="text"
-            value={buildingCode}
-            onChange={(e) => setBuildingCode(e.target.value)}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
-          />
-        </div>
-
-        <div>
           <label className="mb-1 block text-sm font-medium">{t("floor")}</label>
           <input
             type="text"
             value={floor}
             onChange={(e) => setFloor(e.target.value)}
+            dir="ltr"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium">{t("room")}</label>
+          <input
+            type="text"
+            value={room}
+            onChange={(e) => setRoom(e.target.value)}
+            dir="ltr"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium">{t("roomName")}</label>
+          <input
+            type="text"
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
             className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">{t("location")}</label>
+          <label className="mb-1 block text-sm font-medium">{t("area")}</label>
           <input
             type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            value={area}
+            onChange={(e) => setArea(e.target.value)}
             className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
           />
         </div>
