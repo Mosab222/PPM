@@ -5,6 +5,8 @@
 // Computed fresh from maintenance_logs + equipment.created_at on every read —
 // never stored — so it can't go stale.
 
+import { riyadhMonthKey } from "./timezone";
+
 export type SchedulingBucket = "done" | "scheduled" | "overdue";
 
 export type SchedulingChartDatum = {
@@ -21,8 +23,11 @@ export type SchedulingSummary = {
   overdue: number;
 };
 
+// "YYYY-MM" in Asia/Riyadh — delegates to the shared timezone helper so every
+// "current calendar month" comparison in the app agrees on what month it is,
+// regardless of the server's own timezone.
 export function monthKey(iso: string): string {
-  return iso.slice(0, 7); // "YYYY-MM"
+  return riyadhMonthKey(iso);
 }
 
 // "YYYY-MM" -> "YYYY-MM" for the previous calendar month, handling year rollover.

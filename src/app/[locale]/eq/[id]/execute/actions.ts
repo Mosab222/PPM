@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
+import { riyadhDateString, riyadhTimeString } from "@/lib/timezone";
 
 export type ChecklistResponseInput = {
   checklistItemId: string;
@@ -155,6 +156,14 @@ export async function submitMaintenance(
   );
   const result = failingItems.length > 0 ? "needs_attention" : "passed";
 
+  // The DB column defaults for maintenance_date/maintenance_time evaluate
+  // now() in the database's own (UTC) session timezone, not Saudi Arabia
+  // time — so both are set explicitly here, in Asia/Riyadh, at the moment
+  // the maintenance is actually completed.
+  const submittedAt = new Date();
+  const maintenanceDate = riyadhDateString(submittedAt);
+  const maintenanceTime = riyadhTimeString(submittedAt);
+
   // Assigned atomically (per-year sequence, e.g. "2600001") right before the
   // log is marked completed, so every completed maintenance gets exactly one.
   const { data: workOrderNumber, error: workOrderError } = await supabase.rpc(
@@ -177,6 +186,8 @@ export async function submitMaintenance(
         result,
         issues_found: failingItems.length,
         work_order_number: workOrderNumber,
+        maintenance_date: maintenanceDate,
+        maintenance_time: maintenanceTime,
       })
       .eq("id", logId)
       .eq("technician_id", user.id);
@@ -196,6 +207,8 @@ export async function submitMaintenance(
         result,
         issues_found: failingItems.length,
         work_order_number: workOrderNumber,
+        maintenance_date: maintenanceDate,
+        maintenance_time: maintenanceTime,
       })
       .select("id")
       .single();
