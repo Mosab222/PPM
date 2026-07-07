@@ -9,6 +9,7 @@ import { Link } from "@/i18n/navigation";
 type OwnLogRow = {
   id: string;
   equipment_id: string;
+  work_order_number: string | null;
   maintenance_date: string | null;
   maintenance_time: string | null;
   result: string | null;
@@ -32,7 +33,7 @@ export default async function MyRecordsPage({
 
   const { data: logs } = await supabase
     .from("maintenance_logs")
-    .select("id, equipment_id, maintenance_date, maintenance_time, result")
+    .select("id, equipment_id, work_order_number, maintenance_date, maintenance_time, result")
     .eq("technician_id", user.id)
     .eq("status", "completed")
     .eq("deleted", false)
@@ -50,6 +51,7 @@ export default async function MyRecordsPage({
         <table className="w-full text-start text-sm">
           <thead>
             <tr className="border-b border-border text-start text-muted">
+              <th className="px-4 py-2 text-start font-medium">{t("table.workOrder")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.code")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.date")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.time")}</th>
@@ -59,6 +61,7 @@ export default async function MyRecordsPage({
           <tbody>
             {rows.map((row) => (
               <tr key={row.id} className="border-b border-border last:border-0">
+                <td className="px-4 py-2 font-mono">{row.work_order_number ?? "—"}</td>
                 <td className="px-4 py-2 font-mono">
                   <Link href={`/eq/${row.equipment_id}`} className="text-primary underline">
                     {row.equipment_id}

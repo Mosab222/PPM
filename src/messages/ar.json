@@ -40,6 +40,7 @@
     "historyEmpty": "لم يتم تسجيل أي أعمال صيانة لهذه المعدة حتى الآن.",
     "executeMaintenance": "تنفيذ الصيانة",
     "table": {
+      "workOrder": "رقم أمر العمل",
       "date": "التاريخ",
       "time": "الوقت",
       "technician": "الفني",
@@ -132,6 +133,8 @@
       "filters": {
         "equipmentSearch": "رمز المعدة",
         "equipmentSearchPlaceholder": "ابحث بالرمز",
+        "workOrder": "رقم أمر العمل",
+        "workOrderPlaceholder": "ابحث برقم أمر العمل",
         "facility": "المنشأة",
         "type": "النوع",
         "subtype": "النوع الفرعي",
@@ -150,6 +153,7 @@
         "reset": "إعادة تعيين"
       },
       "table": {
+        "workOrder": "رقم أمر العمل",
         "code": "رمز المعدة",
         "facility": "المنشأة",
         "floor": "الطابق",
@@ -493,6 +497,7 @@
       "title": "سجلاتي",
       "empty": "لم تقم بتسجيل أي أعمال صيانة حتى الآن.",
       "table": {
+        "workOrder": "رقم أمر العمل",
         "code": "رمز المعدة",
         "date": "التاريخ",
         "time": "الوقت",

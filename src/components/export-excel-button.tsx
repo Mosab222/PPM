@@ -6,6 +6,7 @@ import { formatDate, formatTime } from "@/lib/format";
 
 export type ReportRow = {
   id: string;
+  workOrderNumber: string | null;
   equipmentCode: string;
   facility: string | null;
   floor: string | null;
@@ -27,6 +28,7 @@ export function ExportExcelButton({ rows, locale }: { rows: ReportRow[]; locale:
 
   function handleExport() {
     const data = rows.map((row) => ({
+      [tTable("workOrder")]: row.workOrderNumber ?? "",
       [tTable("code")]: row.equipmentCode,
       [tTable("facility")]: row.facility ?? "",
       [tTable("floor")]: row.floor ?? "",

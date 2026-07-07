@@ -155,6 +155,16 @@ export async function submitMaintenance(
   );
   const result = failingItems.length > 0 ? "needs_attention" : "passed";
 
+  // Assigned atomically (per-year sequence, e.g. "2600001") right before the
+  // log is marked completed, so every completed maintenance gets exactly one.
+  const { data: workOrderNumber, error: workOrderError } = await supabase.rpc(
+    "next_work_order_number"
+  );
+
+  if (workOrderError || !workOrderNumber) {
+    return { error: "submitError" };
+  }
+
   let logId = input.existingLogId ?? null;
 
   if (logId) {
@@ -166,6 +176,7 @@ export async function submitMaintenance(
         status: "completed",
         result,
         issues_found: failingItems.length,
+        work_order_number: workOrderNumber,
       })
       .eq("id", logId)
       .eq("technician_id", user.id);
@@ -184,6 +195,7 @@ export async function submitMaintenance(
         status: "completed",
         result,
         issues_found: failingItems.length,
+        work_order_number: workOrderNumber,
       })
       .select("id")
       .single();

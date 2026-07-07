@@ -26,6 +26,7 @@ type EquipmentHistoryRow = {
   last_maintenance_date: string | null;
   next_maintenance_date: string | null;
   maintenance_log_id: string | null;
+  work_order_number: string | null;
   maintenance_date: string | null;
   maintenance_time: string | null;
   technician_name: string | null;
@@ -178,6 +179,7 @@ export default async function EquipmentPublicPage({
             <table className="w-full text-start text-sm">
               <thead>
                 <tr className="border-b border-border text-start text-muted">
+                  <th className="py-2 text-start font-medium">{t("table.workOrder")}</th>
                   <th className="py-2 text-start font-medium">{t("table.date")}</th>
                   <th className="py-2 text-start font-medium">{t("table.time")}</th>
                   <th className="py-2 text-start font-medium">{t("table.technician")}</th>
@@ -188,6 +190,7 @@ export default async function EquipmentPublicPage({
               <tbody>
                 {history.map((row, index) => (
                   <tr key={index} className="border-b border-border last:border-0">
+                    <td className="py-2 font-mono">{row.work_order_number ?? "—"}</td>
                     <td className="py-2">{formatDate(row.maintenance_date, locale)}</td>
                     <td className="py-2">{formatTime(row.maintenance_time, locale)}</td>
                     <td className="py-2">{row.technician_name ?? "—"}</td>

@@ -23,6 +23,7 @@ type TechnicianOption = { id: string; full_name: string | null; arabic_name: str
 type MaintenanceLogRow = {
   id: string;
   equipment_id: string;
+  work_order_number: string | null;
   maintenance_date: string | null;
   maintenance_time: string | null;
   technician_name: string | null;
@@ -40,6 +41,7 @@ export default async function ReportsPage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<{
     q?: string;
+    workOrder?: string;
     facility?: string;
     type?: string;
     subtype?: string;
@@ -51,7 +53,7 @@ export default async function ReportsPage({
   }>;
 }) {
   const { locale } = await params;
-  const { q, facility, type, subtype, area, status, technician, from, to } = await searchParams;
+  const { q, workOrder, facility, type, subtype, area, status, technician, from, to } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("admin.reports");
   const tStatus = await getTranslations("equipment.status_value");
@@ -118,11 +120,12 @@ export default async function ReportsPage({
 
   let logQuery = supabase
     .from("maintenance_logs")
-    .select("id, equipment_id, maintenance_date, maintenance_time, technician_name, result, issues_found")
+    .select("id, equipment_id, work_order_number, maintenance_date, maintenance_time, technician_name, result, issues_found")
     .eq("status", "completed")
     .eq("deleted", false);
 
   if (q) logQuery = logQuery.ilike("equipment_id", `%${q}%`);
+  if (workOrder) logQuery = logQuery.ilike("work_order_number", `%${workOrder}%`);
   if (technician) logQuery = logQuery.eq("technician_id", technician);
   if (from) logQuery = logQuery.gte("maintenance_date", from);
   if (to) logQuery = logQuery.lte("maintenance_date", to);
@@ -142,6 +145,7 @@ export default async function ReportsPage({
     const eq = equipmentMap.get(log.equipment_id);
     return {
       id: log.id,
+      workOrderNumber: log.work_order_number,
       equipmentCode: log.equipment_id,
       facility: eq?.facility_code ?? null,
       floor: eq?.floor ?? null,
@@ -176,6 +180,17 @@ export default async function ReportsPage({
             defaultValue={q ?? ""}
             placeholder={t("filters.equipmentSearchPlaceholder")}
             className="rounded-md border border-border bg-background px-3 py-1.5 text-sm"
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs text-muted">{t("filters.workOrder")}</label>
+          <input
+            type="text"
+            name="workOrder"
+            defaultValue={workOrder ?? ""}
+            placeholder={t("filters.workOrderPlaceholder")}
+            dir="ltr"
+            className="rounded-md border border-border bg-background px-3 py-1.5 text-sm font-mono"
           />
         </div>
         <div>
@@ -287,6 +302,7 @@ export default async function ReportsPage({
         <table className="w-full text-start text-sm">
           <thead>
             <tr className="border-b border-border text-start text-muted">
+              <th className="px-4 py-2 text-start font-medium">{t("table.workOrder")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.code")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.facility")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.floor")}</th>
@@ -304,6 +320,7 @@ export default async function ReportsPage({
           <tbody>
             {rows.map((row) => (
               <tr key={row.id} className="border-b border-border last:border-0">
+                <td className="px-4 py-2 font-mono">{row.workOrderNumber ?? "—"}</td>
                 <td className="px-4 py-2 font-mono">{row.equipmentCode}</td>
                 <td className="px-4 py-2">{row.facility ?? "—"}</td>
                 <td className="px-4 py-2">{row.floor ?? "—"}</td>

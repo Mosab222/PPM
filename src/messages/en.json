@@ -40,6 +40,7 @@
     "historyEmpty": "No maintenance has been recorded for this equipment yet.",
     "executeMaintenance": "Execute maintenance",
     "table": {
+      "workOrder": "Work Order No.",
       "date": "Date",
       "time": "Time",
       "technician": "Technician",
@@ -132,6 +133,8 @@
       "filters": {
         "equipmentSearch": "Equipment code",
         "equipmentSearchPlaceholder": "Search by code",
+        "workOrder": "Work Order No.",
+        "workOrderPlaceholder": "Search by work order number",
         "facility": "Facility",
         "type": "Type",
         "subtype": "Subtype",
@@ -150,6 +153,7 @@
         "reset": "Reset"
       },
       "table": {
+        "workOrder": "Work Order No.",
         "code": "Equipment code",
         "facility": "Facility",
         "floor": "Floor",
@@ -493,6 +497,7 @@
       "title": "My records",
       "empty": "You haven't submitted any maintenance records yet.",
       "table": {
+        "workOrder": "Work Order No.",
         "code": "Equipment code",
         "date": "Date",
         "time": "Time",
