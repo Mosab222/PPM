@@ -244,6 +244,52 @@
         },
         "printButton": "طباعة / تنزيل PDF",
         "empty": "لا توجد عمليات صيانة مطابقة للتصفية الحالية."
+      },
+      "inspectionForm": {
+        "linkLabel": "نموذج فحص نظام FM200",
+        "title": "نموذج فحص نظام FM200",
+        "facilityName": "مستشفى الملك عبدالعزيز الجامعي",
+        "generatedOn": "تاريخ إصدار التقرير: {date}",
+        "filters": {
+          "type": "النوع",
+          "subtype": "النوع الفرعي",
+          "floor": "الدور",
+          "area": "المنطقة",
+          "fromDate": "من تاريخ",
+          "toDate": "إلى تاريخ",
+          "allTypes": "كل الأنواع",
+          "allSubtypes": "كل الأنواع الفرعية",
+          "allFloors": "كل الأدوار",
+          "allAreas": "كل المناطق",
+          "attachPhotos": "إرفاق الصور عند الطباعة",
+          "apply": "تصفية",
+          "reset": "إعادة تعيين"
+        },
+        "resultCount": "{count} عملية صيانة مشمولة",
+        "printAll": "طباعة / تنزيل PDF (الكل)",
+        "printOnlyThis": "طباعة هذا النموذج فقط",
+        "info": {
+          "workOrder": "رقم أمر العمل",
+          "date": "التاريخ",
+          "code": "كود المعدة",
+          "floor": "الدور",
+          "room": "الغرفة",
+          "roomName": "اسم الغرفة",
+          "area": "المنطقة",
+          "frequency": "التردد"
+        },
+        "checklist": {
+          "seq": "م",
+          "question": "بند الفحص",
+          "answer": "النتيجة"
+        },
+        "signatures": {
+          "inspectedBy": "نُفِّذ بواسطة (الفني)",
+          "evaluatedBy": "قُيِّم بواسطة",
+          "approvedBy": "اعتُمِد بواسطة"
+        },
+        "photosPageTitle": "الصور",
+        "empty": "لا توجد عمليات صيانة مطابقة للتصفية الحالية."
       }
     },
     "dashboard": {

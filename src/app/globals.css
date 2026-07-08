@@ -94,4 +94,57 @@ body {
   .pms-table thead {
     display: table-header-group;
   }
+
+  .pms-print-hide {
+    display: none !important;
+  }
+
+  /* This report can span many forced-page-break pages, unlike the other two
+     reports that share #pms-print-area's single-page layout. Two of that
+     shared rule's choices break multi-page output here, so both are undone:
+     - `position: absolute` takes the box out of normal flow, and Chromium's
+       print pagination does not honor `break-before` on descendants of an
+       out-of-flow ancestor — every group render on the same handful of
+       pages instead of one page each. Every sibling above this print area
+       already carries its own `print:hidden` (the nav, header, filters,
+       etc.), so nothing needs repositioning to the page origin — normal
+       static flow already starts here with zero leading space.
+     - `display: flex` on the container has the same problem: forced breaks
+       are unreliable on flex children, so this falls back to plain block
+       flow with margin instead of gap for spacing. */
+  #pms-print-area:has(.inspection-group) {
+    display: block !important;
+    position: static !important;
+    width: auto !important;
+  }
+
+  .inspection-group {
+    margin-bottom: 6mm;
+  }
+
+  .inspection-group-break {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  .inspection-form-page {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .inspection-photo-page {
+    break-before: page;
+    page-break-before: always;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .inspection-checklist tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .inspection-checklist thead {
+    display: table-header-group;
+  }
 }

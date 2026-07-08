@@ -244,6 +244,52 @@
         },
         "printButton": "Print / Download PDF",
         "empty": "No maintenance events match the current filters."
+      },
+      "inspectionForm": {
+        "linkLabel": "FM200 System Inspection Form",
+        "title": "FM200 System Inspection Form",
+        "facilityName": "King Abdulaziz University Hospital",
+        "generatedOn": "Report generated: {date}",
+        "filters": {
+          "type": "Type",
+          "subtype": "Subtype",
+          "floor": "Floor",
+          "area": "Area",
+          "fromDate": "From date",
+          "toDate": "To date",
+          "allTypes": "All types",
+          "allSubtypes": "All subtypes",
+          "allFloors": "All floors",
+          "allAreas": "All areas",
+          "attachPhotos": "Attach photos when printing",
+          "apply": "Filter",
+          "reset": "Reset"
+        },
+        "resultCount": "{count} maintenance events included",
+        "printAll": "Print / Download PDF (all)",
+        "printOnlyThis": "Print this one",
+        "info": {
+          "workOrder": "Work Order No.",
+          "date": "Date",
+          "code": "Equipment Code",
+          "floor": "Floor",
+          "room": "Room",
+          "roomName": "Room Name",
+          "area": "Area",
+          "frequency": "Frequency"
+        },
+        "checklist": {
+          "seq": "No.",
+          "question": "Inspection Item",
+          "answer": "Result"
+        },
+        "signatures": {
+          "inspectedBy": "Inspected by (Technician)",
+          "evaluatedBy": "Evaluated by",
+          "approvedBy": "Approved by"
+        },
+        "photosPageTitle": "Photos",
+        "empty": "No maintenance events match the current filters."
       }
     },
     "dashboard": {
