@@ -171,8 +171,8 @@
       "downloadExcel": "تحميل ملف إكسل",
       "resultCount": "{count} سجل",
       "statement": {
-        "linkLabel": "بيان الصيانة الوقائية",
-        "title": "بيان الصيانة الوقائية",
+        "linkLabel": "بيان حالة المعدات",
+        "title": "بيان حالة المعدات",
         "facilityName": "مستشفى الملك عبدالعزيز الجامعي",
         "generatedOn": "تاريخ إصدار التقرير: {date}",
         "filters": {
@@ -205,6 +205,41 @@
         },
         "printButton": "طباعة / تنزيل PDF",
         "empty": "لا توجد معدات مطابقة للتصفية الحالية."
+      },
+      "executed": {
+        "linkLabel": "كشف الصيانة المنفّذة",
+        "title": "كشف الصيانة المنفّذة",
+        "facilityName": "مستشفى الملك عبدالعزيز الجامعي",
+        "generatedOn": "تاريخ إصدار التقرير: {date}",
+        "filters": {
+          "type": "النوع",
+          "subtype": "النوع الفرعي",
+          "floor": "الدور",
+          "area": "المنطقة",
+          "fromDate": "من تاريخ",
+          "toDate": "إلى تاريخ",
+          "allTypes": "كل الأنواع",
+          "allSubtypes": "كل الأنواع الفرعية",
+          "allFloors": "كل الأدوار",
+          "allAreas": "كل المناطق",
+          "apply": "تصفية",
+          "reset": "إعادة تعيين"
+        },
+        "resultCount": "{count} عملية صيانة مشمولة",
+        "summary": {
+          "total": "إجمالي عمليات الصيانة"
+        },
+        "table": {
+          "seq": "م",
+          "workOrder": "رقم أمر العمل",
+          "code": "الكود",
+          "roomName": "اسم الغرفة",
+          "date": "تاريخ الصيانة",
+          "technician": "الفني",
+          "result": "النتيجة"
+        },
+        "printButton": "طباعة / تنزيل PDF",
+        "empty": "لا توجد عمليات صيانة مطابقة للتصفية الحالية."
       }
     },
     "dashboard": {

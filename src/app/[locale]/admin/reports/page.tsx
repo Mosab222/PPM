@@ -172,6 +172,12 @@ export default async function ReportsPage({
           >
             {t("statement.linkLabel")}
           </Link>
+          <Link
+            href="/admin/reports/executed"
+            className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-background"
+          >
+            {t("executed.linkLabel")}
+          </Link>
           <ExportExcelButton rows={rows} locale={locale} />
         </div>
       </div>

@@ -171,8 +171,8 @@
       "downloadExcel": "Download Excel",
       "resultCount": "{count} records",
       "statement": {
-        "linkLabel": "Preventive Maintenance Statement",
-        "title": "Preventive Maintenance Statement",
+        "linkLabel": "Equipment Status Statement",
+        "title": "Equipment Status Statement",
         "facilityName": "King Abdulaziz University Hospital",
         "generatedOn": "Report generated: {date}",
         "filters": {
@@ -205,6 +205,41 @@
         },
         "printButton": "Print / Download PDF",
         "empty": "No equipment matches the current filters."
+      },
+      "executed": {
+        "linkLabel": "Executed Maintenance Report",
+        "title": "Executed Maintenance Report",
+        "facilityName": "King Abdulaziz University Hospital",
+        "generatedOn": "Report generated: {date}",
+        "filters": {
+          "type": "Type",
+          "subtype": "Subtype",
+          "floor": "Floor",
+          "area": "Area",
+          "fromDate": "From date",
+          "toDate": "To date",
+          "allTypes": "All types",
+          "allSubtypes": "All subtypes",
+          "allFloors": "All floors",
+          "allAreas": "All areas",
+          "apply": "Filter",
+          "reset": "Reset"
+        },
+        "resultCount": "{count} maintenance events included",
+        "summary": {
+          "total": "Total Maintenance Events"
+        },
+        "table": {
+          "seq": "No.",
+          "workOrder": "Work Order No.",
+          "code": "Equipment Code",
+          "roomName": "Room Name",
+          "date": "Maintenance Date",
+          "technician": "Technician",
+          "result": "Result"
+        },
+        "printButton": "Print / Download PDF",
+        "empty": "No maintenance events match the current filters."
       }
     },
     "dashboard": {
