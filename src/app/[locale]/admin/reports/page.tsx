@@ -165,7 +165,15 @@ export default async function ReportsPage({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{t("title")}</h1>
-        <ExportExcelButton rows={rows} locale={locale} />
+        <div className="flex gap-3">
+          <Link
+            href="/admin/reports/statement"
+            className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-background"
+          >
+            {t("statement.linkLabel")}
+          </Link>
+          <ExportExcelButton rows={rows} locale={locale} />
+        </div>
       </div>
 
       <form

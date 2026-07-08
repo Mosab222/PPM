@@ -67,4 +67,31 @@ body {
     width: 30mm !important;
     height: 30mm !important;
   }
+
+  #pms-print-area,
+  #pms-print-area * {
+    visibility: visible;
+  }
+  #pms-print-area {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  .pms-print-area,
+  .pms-print-area * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .pms-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .pms-table thead {
+    display: table-header-group;
+  }
 }

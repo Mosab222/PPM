@@ -169,7 +169,43 @@
       },
       "empty": "لا توجد سجلات صيانة مطابقة للمرشحات الحالية.",
       "downloadExcel": "تحميل ملف إكسل",
-      "resultCount": "{count} سجل"
+      "resultCount": "{count} سجل",
+      "statement": {
+        "linkLabel": "بيان الصيانة الوقائية",
+        "title": "بيان الصيانة الوقائية",
+        "facilityName": "مستشفى الملك عبدالعزيز الجامعي",
+        "generatedOn": "تاريخ إصدار التقرير: {date}",
+        "filters": {
+          "type": "النوع",
+          "subtype": "النوع الفرعي",
+          "floor": "الدور",
+          "area": "المنطقة",
+          "fromDate": "من تاريخ",
+          "toDate": "إلى تاريخ",
+          "allTypes": "كل الأنواع",
+          "allSubtypes": "كل الأنواع الفرعية",
+          "allFloors": "كل الأدوار",
+          "allAreas": "كل المناطق",
+          "apply": "تصفية",
+          "reset": "إعادة تعيين"
+        },
+        "resultCount": "{count} معدة مشمولة",
+        "summary": {
+          "total": "إجمالي المعدات"
+        },
+        "table": {
+          "seq": "م",
+          "code": "الكود",
+          "status": "الحالة",
+          "floor": "الدور",
+          "room": "الغرفة",
+          "roomName": "اسم الغرفة",
+          "frequency": "التردد",
+          "lastMaintenance": "آخر صيانة"
+        },
+        "printButton": "طباعة / تنزيل PDF",
+        "empty": "لا توجد معدات مطابقة للتصفية الحالية."
+      }
     },
     "dashboard": {
       "title": "لوحة التحكم",

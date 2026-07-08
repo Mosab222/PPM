@@ -169,7 +169,43 @@
       },
       "empty": "No maintenance records match the current filters.",
       "downloadExcel": "Download Excel",
-      "resultCount": "{count} records"
+      "resultCount": "{count} records",
+      "statement": {
+        "linkLabel": "Preventive Maintenance Statement",
+        "title": "Preventive Maintenance Statement",
+        "facilityName": "King Abdulaziz University Hospital",
+        "generatedOn": "Report generated: {date}",
+        "filters": {
+          "type": "Type",
+          "subtype": "Subtype",
+          "floor": "Floor",
+          "area": "Area",
+          "fromDate": "From date",
+          "toDate": "To date",
+          "allTypes": "All types",
+          "allSubtypes": "All subtypes",
+          "allFloors": "All floors",
+          "allAreas": "All areas",
+          "apply": "Filter",
+          "reset": "Reset"
+        },
+        "resultCount": "{count} equipment included",
+        "summary": {
+          "total": "Total Equipment"
+        },
+        "table": {
+          "seq": "No.",
+          "code": "Code",
+          "status": "Status",
+          "floor": "Floor",
+          "room": "Room",
+          "roomName": "Room Name",
+          "frequency": "Frequency",
+          "lastMaintenance": "Last Maintenance"
+        },
+        "printButton": "Print / Download PDF",
+        "empty": "No equipment matches the current filters."
+      }
     },
     "dashboard": {
       "title": "Dashboard",
