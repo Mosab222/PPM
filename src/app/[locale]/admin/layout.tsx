@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { AdminNav } from "@/components/admin-nav";
+import { SIDEBAR_COLLAPSE_COOKIE } from "@/lib/sidebar-cookie";
 
 export default async function AdminLayout({
   children,
@@ -28,9 +30,12 @@ export default async function AdminLayout({
     );
   }
 
+  const cookieStore = await cookies();
+  const sidebarCollapsed = cookieStore.get(SIDEBAR_COLLAPSE_COOKIE)?.value === "1";
+
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col lg:flex-row lg:gap-6">
-      <AdminNav />
+      <AdminNav initialCollapsed={sidebarCollapsed} />
       <div className="min-w-0 flex-1 pb-20 lg:pb-6">{children}</div>
     </div>
   );

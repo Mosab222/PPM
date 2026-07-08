@@ -1,4 +1,7 @@
 {
+  "common": {
+    "back": "Back"
+  },
   "app": {
     "name": "PPM",
     "tagline": "Planned Preventive Maintenance"
@@ -126,7 +129,8 @@
       "equipment": "Equipment",
       "types": "Types",
       "users": "Users",
-      "reports": "Reports"
+      "reports": "Reports",
+      "toggleSidebar": "Toggle sidebar"
     },
     "reports": {
       "title": "Reports",
@@ -554,7 +558,8 @@
     "notAuthorized": "You don't have access to this page. Technician role required.",
     "nav": {
       "find": "Find equipment",
-      "records": "My records"
+      "records": "My records",
+      "toggleSidebar": "Toggle sidebar"
     },
     "find": {
       "title": "Find equipment",

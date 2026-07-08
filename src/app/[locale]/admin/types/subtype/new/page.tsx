@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { SubtypeAddForm, type ParentTypeOption } from "@/components/subtype-add-form";
+import { BackButton } from "@/components/back-button";
 
 export default async function NewSubtypePage({
   params,
@@ -23,6 +24,7 @@ export default async function NewSubtypePage({
 
   return (
     <div className="flex flex-col gap-4">
+      <BackButton />
       <h1 className="text-xl font-bold">{t("newTitle")}</h1>
       <div className="max-w-md rounded-lg border border-border bg-card p-6">
         <SubtypeAddForm types={types ?? []} locale={locale} defaultParentId={parent} />

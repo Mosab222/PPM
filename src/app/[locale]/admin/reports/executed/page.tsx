@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { Link } from "@/i18n/navigation";
+import { BackButton } from "@/components/back-button";
 import { PrintButton } from "@/components/print-button";
 import { SummaryCard } from "@/components/summary-card";
 import { ResultBadge } from "@/components/result-badge";
@@ -111,6 +112,7 @@ export default async function ExecutedMaintenanceReportPage({
 
   return (
     <div className="flex flex-col gap-4">
+      <BackButton />
       <div className="flex items-center justify-between print:hidden">
         <h1 className="text-xl font-bold">{t("title")}</h1>
         <PrintButton label={t("printButton")} />

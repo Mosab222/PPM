@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { EquipmentForm, type EquipmentType, type EquipmentSubtype } from "@/components/equipment-form";
+import { BackButton } from "@/components/back-button";
 
 export default async function NewEquipmentPage({
   params,
@@ -28,6 +29,7 @@ export default async function NewEquipmentPage({
 
   return (
     <div className="flex flex-col gap-4">
+      <BackButton />
       <h1 className="text-xl font-bold">{t("title")}</h1>
       <div className="rounded-lg border border-border bg-card p-6">
         <EquipmentForm types={types ?? []} subtypes={subtypes ?? []} locale={locale} />
