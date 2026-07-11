@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { FLOOR_OPTIONS } from "@/lib/floor-options";
+import { ZONE_OPTIONS } from "@/lib/zone-options";
 
 const FREQUENCIES = ["weekly", "monthly", "quarterly", "semiannual", "yearly"];
 const STATUSES = ["compliant", "due", "overdue", "needs_attention", "decommissioned"];
@@ -16,6 +17,7 @@ export type UpdateEquipmentInput = {
   id: string;
   facilityCode: string;
   floor: string;
+  zone: string;
   room: string;
   roomName: string;
   area: string;
@@ -37,12 +39,14 @@ export async function updateEquipment(input: UpdateEquipmentInput): Promise<Upda
 
   const facility = normalizeSegment(input.facilityCode);
   const floor = input.floor.trim().toUpperCase();
+  const zone = input.zone.trim().toUpperCase();
   const room = normalizeSegment(input.room);
 
   if (
     !facility ||
     !room ||
-    !FLOOR_OPTIONS.includes(floor as (typeof FLOOR_OPTIONS)[number])
+    !FLOOR_OPTIONS.includes(floor as (typeof FLOOR_OPTIONS)[number]) ||
+    !ZONE_OPTIONS.includes(zone as (typeof ZONE_OPTIONS)[number])
   ) {
     return { error: "invalidSegment" };
   }
@@ -67,6 +71,7 @@ export async function updateEquipment(input: UpdateEquipmentInput): Promise<Upda
     .update({
       facility_code: facility,
       floor,
+      zone,
       room_code: room,
       room_name: roomName,
       area,

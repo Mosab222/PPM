@@ -17,10 +17,10 @@ export default async function EquipmentQrPage({
   const supabase = await createClient();
   const { data: equipment } = await supabase
     .from("equipment")
-    .select("id")
+    .select("id, code")
     .eq("id", id)
     .eq("deleted", false)
-    .single<{ id: string }>();
+    .single<{ id: string; code: string }>();
 
   if (!equipment) {
     notFound();
@@ -32,7 +32,7 @@ export default async function EquipmentQrPage({
         <BackButton />
       </div>
       <h1 className="text-xl font-bold">{t("title")}</h1>
-      <EquipmentQrClient code={equipment.id} />
+      <EquipmentQrClient id={equipment.id} code={equipment.code} />
       <Link href="/admin/equipment" className="text-sm text-primary underline print:hidden">
         {t("back")}
       </Link>

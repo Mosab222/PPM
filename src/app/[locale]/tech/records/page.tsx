@@ -41,6 +41,14 @@ export default async function MyRecordsPage({
     .order("maintenance_time", { ascending: false, nullsFirst: false })
     .returns<OwnLogRow[]>();
 
+  const equipmentIds = Array.from(new Set((logs ?? []).map((l) => l.equipment_id)));
+  const { data: equipmentRows } = await supabase
+    .from("equipment")
+    .select("id, code")
+    .in("id", equipmentIds.length > 0 ? equipmentIds : ["__no_match__"])
+    .returns<{ id: string; code: string }[]>();
+  const codeById = new Map((equipmentRows ?? []).map((e) => [e.id, e.code]));
+
   const rows = logs ?? [];
 
   return (
@@ -64,7 +72,7 @@ export default async function MyRecordsPage({
                 <td className="px-4 py-2 font-mono">{row.work_order_number ?? "—"}</td>
                 <td className="px-4 py-2 font-mono">
                   <Link href={`/eq/${row.equipment_id}`} className="text-primary underline">
-                    {row.equipment_id}
+                    {codeById.get(row.equipment_id) ?? row.equipment_id}
                   </Link>
                 </td>
                 <td className="px-4 py-2">{formatDate(row.maintenance_date, locale)}</td>

@@ -6,6 +6,7 @@ import { formatDate } from "@/lib/format";
 
 type EquipmentRow = {
   id: string;
+  code: string;
   type_code: string;
   subtype_code: string;
   facility_code: string | null;
@@ -67,7 +68,7 @@ export default async function EquipmentListPage({
   let query = supabase.from("equipment").select("*").eq("deleted", false);
 
   if (q) {
-    query = query.or(`id.ilike.%${q}%,room_code.ilike.%${q}%`);
+    query = query.or(`code.ilike.%${q}%,room_code.ilike.%${q}%`);
   }
   if (facility) {
     query = query.ilike("facility_code", `%${facility}%`);
@@ -80,7 +81,7 @@ export default async function EquipmentListPage({
   }
 
   const { data: equipment } = await query
-    .order("id", { ascending: true })
+    .order("code", { ascending: true })
     .returns<EquipmentRow[]>();
 
   return (
@@ -180,7 +181,7 @@ export default async function EquipmentListPage({
           <tbody>
             {(equipment ?? []).map((row) => (
               <tr key={row.id} className="border-b border-border last:border-0">
-                <td className="px-4 py-2 font-mono">{row.id}</td>
+                <td className="px-4 py-2 font-mono">{row.code}</td>
                 <td className="px-4 py-2">{subtypeLabels.get(row.subtype_code) ?? row.subtype_code}</td>
                 <td className="px-4 py-2">{row.facility_code ?? "—"}</td>
                 <td className="px-4 py-2">{row.floor ?? "—"}</td>

@@ -10,6 +10,7 @@ import { riyadhDateString } from "@/lib/timezone";
 
 type EquipmentLookup = {
   id: string;
+  code: string;
   type_code: string | null;
   subtype_code: string | null;
   floor: string | null;
@@ -109,7 +110,7 @@ export default async function InspectionFormReportPage({
 
   let equipmentQuery = supabase
     .from("equipment")
-    .select("id, type_code, subtype_code, floor, room_code, room_name, area, maintenance_frequency")
+    .select("id, code, type_code, subtype_code, floor, room_code, room_name, area, maintenance_frequency")
     .eq("deleted", false);
 
   if (type) equipmentQuery = equipmentQuery.eq("type_code", type);
@@ -345,7 +346,7 @@ export default async function InspectionFormReportPage({
                 <div className="grid grid-cols-4 gap-x-4 gap-y-2 rounded-md border border-border p-3 text-xs">
                   <InfoField label={t("info.workOrder")} value={form.log.work_order_number ?? "—"} mono />
                   <InfoField label={t("info.date")} value={formatDate(form.log.maintenance_date, locale)} />
-                  <InfoField label={t("info.code")} value={form.log.equipment_id} mono />
+                  <InfoField label={t("info.code")} value={form.equipment.code} mono />
                   <InfoField label={t("info.floor")} value={form.equipment.floor ?? "—"} />
                   <InfoField label={t("info.room")} value={form.equipment.room_code ?? "—"} />
                   <InfoField label={t("info.roomName")} value={form.equipment.room_name ?? "—"} />
@@ -411,7 +412,7 @@ export default async function InspectionFormReportPage({
                     dir="ltr"
                     className="flex items-center justify-between border-b-2 border-primary pb-2 text-xs font-medium"
                   >
-                    <span className="font-mono">{form.equipment.id}</span>
+                    <span className="font-mono">{form.equipment.code}</span>
                     <span>{formatDate(form.log.maintenance_date, locale)}</span>
                     <span className="font-mono">{form.log.work_order_number ?? "—"}</span>
                   </div>

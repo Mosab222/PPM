@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 
 type EquipmentLookup = {
   id: string;
+  code: string;
   facility_code: string | null;
   floor: string | null;
   room_code: string | null;
@@ -69,7 +70,7 @@ export default async function ReportsPage({
   ] = await Promise.all([
     supabase
       .from("equipment")
-      .select("id, facility_code, floor, room_code, room_name, area, type_code, subtype_code, status")
+      .select("id, code, facility_code, floor, room_code, room_name, area, type_code, subtype_code, status")
       .eq("deleted", false)
       .returns<EquipmentLookup[]>(),
     supabase
@@ -108,8 +109,9 @@ export default async function ReportsPage({
   ).sort();
 
   let allowedEquipmentIds: string[] | null = null;
-  if (facility || type || subtype || area || status) {
+  if (q || facility || type || subtype || area || status) {
     let filtered = equipmentRows ?? [];
+    if (q) filtered = filtered.filter((e) => e.code.toLowerCase().includes(q.toLowerCase()));
     if (facility) filtered = filtered.filter((e) => e.facility_code === facility);
     if (type) filtered = filtered.filter((e) => e.type_code === type);
     if (subtype) filtered = filtered.filter((e) => e.subtype_code === subtype);
@@ -124,7 +126,6 @@ export default async function ReportsPage({
     .eq("status", "completed")
     .eq("deleted", false);
 
-  if (q) logQuery = logQuery.ilike("equipment_id", `%${q}%`);
   if (workOrder) logQuery = logQuery.ilike("work_order_number", `%${workOrder}%`);
   if (technician) logQuery = logQuery.eq("technician_id", technician);
   if (from) logQuery = logQuery.gte("maintenance_date", from);
@@ -146,7 +147,7 @@ export default async function ReportsPage({
     return {
       id: log.id,
       workOrderNumber: log.work_order_number,
-      equipmentCode: log.equipment_id,
+      equipmentCode: eq?.code ?? "—",
       facility: eq?.facility_code ?? null,
       floor: eq?.floor ?? null,
       room: eq?.room_code ?? null,

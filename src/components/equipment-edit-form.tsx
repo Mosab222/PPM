@@ -7,11 +7,14 @@ import { updateEquipment } from "@/app/[locale]/admin/equipment/[id]/actions";
 import { OperationalStatusBadge } from "@/components/operational-status-badge";
 import type { OperationalStatus } from "@/lib/operational-status";
 import { FLOOR_OPTIONS } from "@/lib/floor-options";
+import { ZONE_OPTIONS } from "@/lib/zone-options";
 
 export type EditableEquipment = {
   id: string;
+  code: string;
   facility_code: string | null;
   floor: string | null;
+  zone: string | null;
   room_code: string | null;
   room_name: string | null;
   area: string | null;
@@ -35,6 +38,7 @@ export function EquipmentEditForm({
   const tStatus = useTranslations("equipment.status_value");
   const [facilityCode, setFacilityCode] = useState(equipment.facility_code ?? "");
   const [floor, setFloor] = useState(equipment.floor ?? "");
+  const [zone, setZone] = useState(equipment.zone ?? "");
   const [room, setRoom] = useState(equipment.room_code ?? "");
   const [roomName, setRoomName] = useState(equipment.room_name ?? "");
   const [area, setArea] = useState(equipment.area ?? "");
@@ -53,7 +57,7 @@ export function EquipmentEditForm({
     setSaved(false);
 
     const weightValue = Number(weight);
-    if (!facilityCode.trim() || !floor || !room.trim()) {
+    if (!facilityCode.trim() || !floor || !zone || !room.trim()) {
       setError("invalidSegment");
       return;
     }
@@ -71,6 +75,7 @@ export function EquipmentEditForm({
         id: equipment.id,
         facilityCode,
         floor,
+        zone,
         room,
         roomName,
         area,
@@ -91,7 +96,7 @@ export function EquipmentEditForm({
     <div className="flex flex-col gap-4">
       <div>
         <label className="mb-1 block text-sm font-medium">{t("code")}</label>
-        <p className="break-all font-mono text-sm text-muted">{equipment.id}</p>
+        <p className="break-all font-mono text-sm text-muted">{equipment.code}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -117,6 +122,22 @@ export function EquipmentEditForm({
             {FLOOR_OPTIONS.map((value) => (
               <option key={value} value={value}>
                 {t(`floor_value.${value}`)} ({value})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium">{t("zone")}</label>
+          <select
+            value={zone}
+            onChange={(e) => setZone(e.target.value)}
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+          >
+            <option value="">{t("selectZone")}</option>
+            {ZONE_OPTIONS.map((value) => (
+              <option key={value} value={value}>
+                {t(`zone_value.${value}`)} ({value})
               </option>
             ))}
           </select>

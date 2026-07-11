@@ -20,7 +20,7 @@ export default async function EditEquipmentPage({
   const { data: equipment } = await supabase
     .from("equipment")
     .select(
-      "id, facility_code, floor, room_code, room_name, area, weight, maintenance_frequency, status, manual_operational_override"
+      "id, code, facility_code, floor, zone, room_code, room_name, area, weight, maintenance_frequency, status, manual_operational_override"
     )
     .eq("id", id)
     .eq("deleted", false)

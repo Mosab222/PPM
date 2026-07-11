@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { createEquipment } from "@/app/[locale]/admin/equipment/new/actions";
 import { QrCodeDisplay } from "@/components/qr-code-display";
 import { FLOOR_OPTIONS } from "@/lib/floor-options";
+import { ZONE_OPTIONS } from "@/lib/zone-options";
 
 export type EquipmentType = {
   id: string;
@@ -44,6 +45,7 @@ export function EquipmentForm({
   const [subtypeId, setSubtypeId] = useState("");
   const [facilityCode, setFacilityCode] = useState("");
   const [floor, setFloor] = useState("");
+  const [zone, setZone] = useState("");
   const [room, setRoom] = useState("");
   const [roomName, setRoomName] = useState("");
   const [area, setArea] = useState("");
@@ -51,7 +53,7 @@ export function EquipmentForm({
   const [frequency, setFrequency] = useState<string>("monthly");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [created, setCreated] = useState<{ equipmentId: string; url: string } | null>(null);
+  const [created, setCreated] = useState<{ code: string; url: string } | null>(null);
 
   const availableSubtypes = useMemo(
     () => subtypes.filter((s) => s.parent_type_id === typeId),
@@ -63,9 +65,10 @@ export function EquipmentForm({
     const subtype = subtypes.find((s) => s.id === subtypeId);
     const facilitySeg = normalizeSegment(facilityCode) || "—";
     const floorSeg = floor || "—";
+    const zoneSeg = zone || "—";
     const roomSeg = normalizeSegment(room) || "—";
-    return `${facilitySeg}-${type?.code ?? "—"}-${subtype?.code ?? "—"}-XXXX-${floorSeg}-${roomSeg}`;
-  }, [types, subtypes, typeId, subtypeId, facilityCode, floor, room]);
+    return `${facilitySeg}-${type?.code ?? "—"}-${subtype?.code ?? "—"}-XXXX-${floorSeg}-${zoneSeg}-${roomSeg}`;
+  }, [types, subtypes, typeId, subtypeId, facilityCode, floor, zone, room]);
 
   function typeLabel(type: EquipmentType) {
     return (locale === "ar" ? type.arabic_name : type.name) || type.name;
@@ -93,6 +96,7 @@ export function EquipmentForm({
     setSubtypeId("");
     setFacilityCode("");
     setFloor("");
+    setZone("");
     setRoom("");
     setRoomName("");
     setArea("");
@@ -112,6 +116,7 @@ export function EquipmentForm({
       !subtype ||
       !normalizeSegment(facilityCode) ||
       !floor ||
+      !zone ||
       !normalizeSegment(room) ||
       !weight.trim() ||
       Number.isNaN(weightValue) ||
@@ -133,6 +138,7 @@ export function EquipmentForm({
         subtypeCode: subtype.code,
         facilityCode,
         floor,
+        zone,
         room,
         roomName,
         area,
@@ -140,13 +146,13 @@ export function EquipmentForm({
         maintenanceFrequency: frequency,
       });
 
-      if (result.error || !result.equipmentId) {
+      if (result.error || !result.id || !result.code) {
         setError(result.error ?? "submitError");
         return;
       }
 
-      const url = `${window.location.origin}/ar/eq/${result.equipmentId}`;
-      setCreated({ equipmentId: result.equipmentId, url });
+      const url = `${window.location.origin}/ar/eq/${result.id}`;
+      setCreated({ code: result.code, url });
     });
   }
 
@@ -154,7 +160,7 @@ export function EquipmentForm({
     return (
       <div className="flex flex-col items-center gap-4">
         <h2 className="text-lg font-semibold text-green-800">{tSuccess("title")}</h2>
-        <QrCodeDisplay url={created.url} code={created.equipmentId} />
+        <QrCodeDisplay url={created.url} code={created.code} />
         <div className="flex gap-3 print:hidden">
           <button
             type="button"
@@ -239,6 +245,22 @@ export function EquipmentForm({
             {FLOOR_OPTIONS.map((value) => (
               <option key={value} value={value}>
                 {t(`floor_value.${value}`)} ({value})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium">{t("zone")}</label>
+          <select
+            value={zone}
+            onChange={(e) => setZone(e.target.value)}
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+          >
+            <option value="">{t("selectZone")}</option>
+            {ZONE_OPTIONS.map((value) => (
+              <option key={value} value={value}>
+                {t(`zone_value.${value}`)} ({value})
               </option>
             ))}
           </select>

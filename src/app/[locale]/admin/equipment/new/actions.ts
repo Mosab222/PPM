@@ -3,12 +3,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { FLOOR_OPTIONS } from "@/lib/floor-options";
+import { ZONE_OPTIONS } from "@/lib/zone-options";
 
 export type CreateEquipmentInput = {
   typeCode: string;
   subtypeCode: string;
   facilityCode: string;
   floor: string;
+  zone: string;
   room: string;
   roomName: string;
   area: string;
@@ -17,7 +19,8 @@ export type CreateEquipmentInput = {
 };
 
 export type CreateEquipmentResult = {
-  equipmentId?: string;
+  id?: string;
+  code?: string;
   error?: "unauthorized" | "invalidSegment" | "missingFields" | "submitError";
 };
 
@@ -38,12 +41,14 @@ export async function createEquipment(
 
   const facility = normalizeSegment(input.facilityCode);
   const floor = input.floor.trim().toUpperCase();
+  const zone = input.zone.trim().toUpperCase();
   const room = normalizeSegment(input.room);
 
   if (
     !facility ||
     !room ||
-    !FLOOR_OPTIONS.includes(floor as (typeof FLOOR_OPTIONS)[number])
+    !FLOOR_OPTIONS.includes(floor as (typeof FLOOR_OPTIONS)[number]) ||
+    !ZONE_OPTIONS.includes(zone as (typeof ZONE_OPTIONS)[number])
   ) {
     return { error: "invalidSegment" };
   }
@@ -68,27 +73,28 @@ export async function createEquipment(
     return { error: "submitError" };
   }
 
-  const paddedSequence = String(sequenceNumber).padStart(4, "0");
-  const equipmentId = `${facility}-${input.typeCode}-${input.subtypeCode}-${paddedSequence}-${floor}-${room}`;
+  const { data: inserted, error: insertError } = await supabase
+    .from("equipment")
+    .insert({
+      type_code: input.typeCode,
+      subtype_code: input.subtypeCode,
+      sequence_number: sequenceNumber,
+      facility_code: facility,
+      floor,
+      zone,
+      room_code: room,
+      room_name: roomName,
+      area,
+      weight: input.weight,
+      maintenance_frequency: input.maintenanceFrequency,
+      created_by: user.id,
+    })
+    .select("id, code")
+    .single();
 
-  const { error: insertError } = await supabase.from("equipment").insert({
-    id: equipmentId,
-    type_code: input.typeCode,
-    subtype_code: input.subtypeCode,
-    sequence_number: sequenceNumber,
-    facility_code: facility,
-    floor,
-    room_code: room,
-    room_name: roomName,
-    area,
-    weight: input.weight,
-    maintenance_frequency: input.maintenanceFrequency,
-    created_by: user.id,
-  });
-
-  if (insertError) {
+  if (insertError || !inserted) {
     return { error: "submitError" };
   }
 
-  return { equipmentId };
+  return { id: inserted.id, code: inserted.code };
 }

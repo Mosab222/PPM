@@ -5,9 +5,11 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { ChecklistForm } from "@/components/checklist-form";
 import type { MaintenancePhoto } from "@/app/[locale]/eq/[id]/execute/actions";
+import { isUuid } from "@/lib/is-uuid";
 
 type Equipment = {
   id: string;
+  code: string;
   type_code: string;
   subtype_code: string;
 };
@@ -62,8 +64,8 @@ export default async function ExecuteMaintenancePage({
 
   const { data: equipment } = await supabase
     .from("equipment")
-    .select("id, type_code, subtype_code")
-    .eq("id", id)
+    .select("id, code, type_code, subtype_code")
+    .eq(isUuid(id) ? "id" : "code", id)
     .eq("deleted", false)
     .single<Equipment>();
 
@@ -139,7 +141,7 @@ export default async function ExecuteMaintenancePage({
       <div className="rounded-lg border border-border bg-card p-6 text-center">
         <p className="text-sm text-muted">{t("title")}</p>
         <p className="mt-1 text-xl font-bold text-primary">{templateName}</p>
-        <p className="mt-1 font-mono text-sm text-muted">{equipment.id}</p>
+        <p className="mt-1 font-mono text-sm text-muted">{equipment.code}</p>
       </div>
 
       <ChecklistForm

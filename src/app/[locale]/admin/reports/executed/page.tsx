@@ -11,6 +11,7 @@ import { riyadhDateString } from "@/lib/timezone";
 
 type EquipmentLookup = {
   id: string;
+  code: string;
   type_code: string | null;
   subtype_code: string | null;
   floor: string | null;
@@ -54,7 +55,7 @@ export default async function ExecutedMaintenanceReportPage({
 
   let equipmentQuery = supabase
     .from("equipment")
-    .select("id, type_code, subtype_code, floor, area, room_name")
+    .select("id, code, type_code, subtype_code, floor, area, room_name")
     .eq("deleted", false);
 
   if (type) equipmentQuery = equipmentQuery.eq("type_code", type);
@@ -84,6 +85,7 @@ export default async function ExecutedMaintenanceReportPage({
 
   const rows = (logs ?? []).map((log) => ({
     ...log,
+    code: equipmentMap.get(log.equipment_id)?.code ?? "—",
     roomName: equipmentMap.get(log.equipment_id)?.room_name ?? null,
   }));
 
@@ -245,7 +247,7 @@ export default async function ExecutedMaintenanceReportPage({
                   >
                     <td className="px-3 py-2">{index + 1}</td>
                     <td className="px-3 py-2 font-mono">{row.work_order_number ?? "—"}</td>
-                    <td className="px-3 py-2 font-mono">{row.equipment_id}</td>
+                    <td className="px-3 py-2 font-mono">{row.code}</td>
                     <td className="px-3 py-2">{row.roomName ?? "—"}</td>
                     <td className="px-3 py-2">{formatDate(row.maintenance_date, locale)}</td>
                     <td className="px-3 py-2">{row.technician_name ?? "—"}</td>

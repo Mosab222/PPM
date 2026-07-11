@@ -5,6 +5,7 @@ import QRCode from "qrcode";
 
 export type PrintEquipment = {
   id: string;
+  code: string;
   room_name: string | null;
   area: string | null;
 };
@@ -47,12 +48,12 @@ export function BulkQrGrid({ equipment }: { equipment: PrintEquipment[] }) {
         >
           {dataUrls[eq.id] ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={dataUrls[eq.id]} alt={eq.id} className="h-24 w-24" />
+            <img src={dataUrls[eq.id]} alt={eq.code} className="h-24 w-24" />
           ) : (
             <div className="h-24 w-24 animate-pulse rounded bg-background" />
           )}
           <p dir="ltr" className="break-all font-mono text-[10px] font-bold text-primary">
-            {eq.id}
+            {eq.code}
           </p>
           {eq.room_name && <p className="text-[10px]">{eq.room_name}</p>}
           {eq.area && <p className="text-[10px] text-muted">{eq.area}</p>}

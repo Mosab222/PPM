@@ -16,6 +16,7 @@ import {
 
 type EquipmentRow = {
   id: string;
+  code: string;
   type_code: string | null;
   subtype_code: string | null;
   floor: string | null;
@@ -61,7 +62,7 @@ export default async function PmStatementPage({
   let query = supabase
     .from("equipment")
     .select(
-      "id, type_code, subtype_code, floor, room_code, room_name, area, maintenance_frequency, manual_operational_override"
+      "id, code, type_code, subtype_code, floor, room_code, room_name, area, maintenance_frequency, manual_operational_override"
     )
     .eq("deleted", false);
 
@@ -70,7 +71,7 @@ export default async function PmStatementPage({
   if (floor) query = query.eq("floor", floor);
   if (area) query = query.eq("area", area);
 
-  const { data: equipment } = await query.order("id", { ascending: true }).returns<EquipmentRow[]>();
+  const { data: equipment } = await query.order("code", { ascending: true }).returns<EquipmentRow[]>();
   const equipmentRows = equipment ?? [];
   const equipmentIds = equipmentRows.map((e) => e.id);
 
@@ -277,7 +278,7 @@ export default async function PmStatementPage({
                     className={`border-b border-border last:border-0 ${index % 2 === 1 ? "bg-background/60" : ""}`}
                   >
                     <td className="px-3 py-2">{index + 1}</td>
-                    <td className="px-3 py-2 font-mono">{row.id}</td>
+                    <td className="px-3 py-2 font-mono">{row.code}</td>
                     <td className="px-3 py-2">
                       <OperationalStatusBadge status={row.bucket} />
                     </td>

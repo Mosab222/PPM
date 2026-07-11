@@ -30,6 +30,7 @@
     "subtype": "Subtype",
     "facility": "Facility",
     "floor": "Floor",
+    "zone": "Zone",
     "room": "Room",
     "roomName": "Room Name",
     "area": "Area",
@@ -457,8 +458,10 @@
         "selectType": "Select a type",
         "selectSubtype": "Select a subtype",
         "selectFloor": "Select a floor",
+        "selectZone": "Select a zone",
         "facility": "Facility code",
         "floor": "Floor",
+        "zone": "Zone",
         "room": "Room code",
         "roomName": "Room name",
         "area": "Area",
@@ -495,9 +498,17 @@
           "9F": "Floor 9",
           "OUTSIDE": "Outside"
         },
+        "zone_value": {
+          "A": "Zone A",
+          "B": "Zone B",
+          "C": "Zone C",
+          "D": "Zone D",
+          "OUTSIDE": "Outside",
+          "Z": "Unassigned (Z)"
+        },
         "errors": {
           "unauthorized": "You don't have permission to manage equipment.",
-          "invalidSegment": "Facility and room must contain at least one letter or number, and floor must be a valid option.",
+          "invalidSegment": "Facility and room must contain at least one letter or number, and floor and zone must be valid options.",
           "invalidWeight": "Please enter a valid weight greater than 0.",
           "missingFields": "Please fill in the room name and area.",
           "submitError": "Something went wrong. Please try again."

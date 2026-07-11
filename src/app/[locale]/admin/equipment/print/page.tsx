@@ -37,7 +37,7 @@ export default async function PrintQrLabelsPage({
 
   let query = supabase
     .from("equipment")
-    .select("id, room_name, area, facility_code, floor, type_code, subtype_code")
+    .select("id, code, room_name, area, facility_code, floor, type_code, subtype_code")
     .eq("deleted", false);
 
   if (facility) query = query.eq("facility_code", facility);
@@ -46,7 +46,7 @@ export default async function PrintQrLabelsPage({
   if (floor) query = query.eq("floor", floor);
   if (area) query = query.eq("area", area);
 
-  const { data: equipment } = await query.order("id", { ascending: true }).returns<EquipmentRow[]>();
+  const { data: equipment } = await query.order("code", { ascending: true }).returns<EquipmentRow[]>();
   const rows = equipment ?? [];
 
   const [{ data: types }, { data: subtypes }, { data: facilityRows }, { data: floorRows }, { data: areaRows }] =

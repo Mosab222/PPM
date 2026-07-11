@@ -9,12 +9,16 @@ import { OperationalStatusBadge } from "@/components/operational-status-badge";
 import { Link } from "@/i18n/navigation";
 import { classifySchedulingStatus, monthKey, previousMonthKey } from "@/lib/scheduling";
 import { classifyOperationalStatus } from "@/lib/operational-status";
+import { isUuid } from "@/lib/is-uuid";
 
 type EquipmentHistoryRow = {
+  equipment_id: string;
   equipment_code: string;
+  type_code: string | null;
   subtype_code: string | null;
   facility_code: string | null;
   floor: string | null;
+  zone: string | null;
   room_code: string | null;
   room_name: string | null;
   area: string | null;
@@ -39,7 +43,7 @@ async function getEquipmentHistory(id: string) {
   const { data } = await supabase
     .from("equipment_public_history")
     .select("*")
-    .eq("equipment_code", id)
+    .eq(isUuid(id) ? "equipment_id" : "equipment_code", id)
     .order("maintenance_date", { ascending: false, nullsFirst: false })
     .order("maintenance_time", { ascending: false, nullsFirst: false });
 
@@ -106,6 +110,7 @@ export default async function EquipmentPublicPage({
     [t("subtype"), equipment.subtype_code ?? "—"],
     [t("facility"), equipment.facility_code ?? "—"],
     [t("floor"), equipment.floor ?? "—"],
+    [t("zone"), equipment.zone ?? "—"],
     [t("room"), equipment.room_code ?? "—"],
     [t("roomName"), equipment.room_name ?? "—"],
     [t("area"), equipment.area ?? "—"],
@@ -149,7 +154,7 @@ export default async function EquipmentPublicPage({
         </div>
         {canExecuteMaintenance && (
           <Link
-            href={`/eq/${id}/execute`}
+            href={`/eq/${equipment.equipment_id}/execute`}
             prefetch={false}
             className="mt-4 inline-block rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
           >
