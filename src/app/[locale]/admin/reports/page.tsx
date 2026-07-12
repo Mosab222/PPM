@@ -11,6 +11,7 @@ type EquipmentLookup = {
   code: string;
   facility_code: string | null;
   floor: string | null;
+  zone: string | null;
   room_code: string | null;
   room_name: string | null;
   area: string | null;
@@ -70,7 +71,7 @@ export default async function ReportsPage({
   ] = await Promise.all([
     supabase
       .from("equipment")
-      .select("id, code, facility_code, floor, room_code, room_name, area, type_code, subtype_code, status")
+      .select("id, code, facility_code, floor, zone, room_code, room_name, area, type_code, subtype_code, status")
       .eq("deleted", false)
       .returns<EquipmentLookup[]>(),
     supabase
@@ -150,6 +151,7 @@ export default async function ReportsPage({
       equipmentCode: eq?.code ?? "—",
       facility: eq?.facility_code ?? null,
       floor: eq?.floor ?? null,
+      zone: eq?.zone ?? null,
       room: eq?.room_code ?? null,
       roomName: eq?.room_name ?? null,
       area: eq?.area ?? null,
@@ -327,6 +329,7 @@ export default async function ReportsPage({
               <th className="px-4 py-2 text-start font-medium">{t("table.code")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.facility")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.floor")}</th>
+              <th className="px-4 py-2 text-start font-medium">{t("table.zone")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.room")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.roomName")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.area")}</th>
@@ -345,6 +348,7 @@ export default async function ReportsPage({
                 <td className="px-4 py-2 font-mono">{row.equipmentCode}</td>
                 <td className="px-4 py-2">{row.facility ?? "—"}</td>
                 <td className="px-4 py-2">{row.floor ?? "—"}</td>
+                <td className="px-4 py-2">{row.zone ?? "—"}</td>
                 <td className="px-4 py-2">{row.room ?? "—"}</td>
                 <td className="px-4 py-2">{row.roomName ?? "—"}</td>
                 <td className="px-4 py-2">{row.area ?? "—"}</td>

@@ -20,6 +20,7 @@ type EquipmentRow = {
   type_code: string | null;
   subtype_code: string | null;
   floor: string | null;
+  zone: string | null;
   room_code: string | null;
   room_name: string | null;
   area: string | null;
@@ -80,7 +81,7 @@ export default async function PmStatementPage({
   let query = supabase
     .from("equipment")
     .select(
-      "id, code, type_code, subtype_code, floor, room_code, room_name, area, maintenance_frequency, manual_operational_override"
+      "id, code, type_code, subtype_code, floor, zone, room_code, room_name, area, maintenance_frequency, manual_operational_override"
     )
     .eq("deleted", false);
 
@@ -270,6 +271,7 @@ export default async function PmStatementPage({
                   <th className="px-3 py-2 text-start font-medium">{t("table.code")}</th>
                   <th className="px-3 py-2 text-start font-medium">{t("table.status")}</th>
                   <th className="px-3 py-2 text-start font-medium">{t("table.floor")}</th>
+                  <th className="px-3 py-2 text-start font-medium">{t("table.zone")}</th>
                   <th className="px-3 py-2 text-start font-medium">{t("table.room")}</th>
                   <th className="px-3 py-2 text-start font-medium">{t("table.roomName")}</th>
                   <th className="px-3 py-2 text-start font-medium">{t("table.frequency")}</th>
@@ -288,6 +290,7 @@ export default async function PmStatementPage({
                       <OperationalStatusBadge status={row.bucket} />
                     </td>
                     <td className="px-3 py-2">{row.floor ?? "—"}</td>
+                    <td className="px-3 py-2">{row.zone ?? "—"}</td>
                     <td className="px-3 py-2">{row.room_code ?? "—"}</td>
                     <td className="px-3 py-2">{row.room_name ?? "—"}</td>
                     <td className="px-3 py-2">

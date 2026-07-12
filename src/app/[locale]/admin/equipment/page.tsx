@@ -11,6 +11,7 @@ type EquipmentRow = {
   subtype_code: string;
   facility_code: string | null;
   floor: string | null;
+  zone: string | null;
   room_code: string | null;
   status: string | null;
   next_maintenance_date: string | null;
@@ -183,6 +184,7 @@ export default async function EquipmentListPage({
               <th className="px-4 py-2 text-start font-medium">{t("table.type")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.facility")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.floor")}</th>
+              <th className="px-4 py-2 text-start font-medium">{t("table.zone")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.room")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.status")}</th>
               <th className="px-4 py-2 text-start font-medium">{t("table.nextMaintenance")}</th>
@@ -198,6 +200,7 @@ export default async function EquipmentListPage({
                 <td className="px-4 py-2">{subtypeLabels.get(row.subtype_code) ?? row.subtype_code}</td>
                 <td className="px-4 py-2">{row.facility_code ?? "—"}</td>
                 <td className="px-4 py-2">{row.floor ?? "—"}</td>
+                <td className="px-4 py-2">{row.zone ?? "—"}</td>
                 <td className="px-4 py-2">{row.room_code ?? "—"}</td>
                 <td className="px-4 py-2">
                   {row.status ? <StatusBadge status={row.status} /> : "—"}

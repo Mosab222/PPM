@@ -164,6 +164,7 @@
         "code": "Equipment code",
         "facility": "Facility",
         "floor": "Floor",
+        "zone": "Zone",
         "room": "Room",
         "roomName": "Room Name",
         "area": "Area",
@@ -205,6 +206,7 @@
           "code": "Code",
           "status": "Status",
           "floor": "Floor",
+          "zone": "Zone",
           "room": "Room",
           "roomName": "Room Name",
           "frequency": "Frequency",
@@ -249,8 +251,9 @@
         "empty": "No maintenance events match the current filters."
       },
       "inspectionForm": {
-        "linkLabel": "FM200 System Inspection Form",
-        "title": "FM200 System Inspection Form",
+        "linkLabel": "Inspection Form Report",
+        "title": "Inspection Form Report",
+        "formTitleFallback": "Maintenance Inspection Form",
         "facilityName": "King Abdulaziz University Hospital",
         "generatedOn": "Report generated: {date}",
         "filters": {
@@ -276,6 +279,7 @@
           "date": "Date",
           "code": "Equipment Code",
           "floor": "Floor",
+          "zone": "Zone",
           "room": "Room",
           "roomName": "Room Name",
           "area": "Area",
@@ -443,6 +447,7 @@
         "type": "Type",
         "facility": "Facility",
         "floor": "Floor",
+        "zone": "Zone",
         "room": "Room",
         "status": "Status",
         "nextMaintenance": "Next maintenance",

@@ -14,10 +14,17 @@ type EquipmentLookup = {
   type_code: string | null;
   subtype_code: string | null;
   floor: string | null;
+  zone: string | null;
   room_code: string | null;
   room_name: string | null;
   area: string | null;
   maintenance_frequency: string | null;
+};
+
+type ChecklistTemplateNameRow = {
+  id: string;
+  name: string;
+  arabic_name: string | null;
 };
 
 type MaintenanceLogRow = {
@@ -129,7 +136,7 @@ export default async function InspectionFormReportPage({
 
   let equipmentQuery = supabase
     .from("equipment")
-    .select("id, code, type_code, subtype_code, floor, room_code, room_name, area, maintenance_frequency")
+    .select("id, code, type_code, subtype_code, floor, zone, room_code, room_name, area, maintenance_frequency")
     .eq("deleted", false);
 
   if (type) equipmentQuery = equipmentQuery.eq("type_code", type);
@@ -164,9 +171,10 @@ export default async function InspectionFormReportPage({
   let responseRows: ResponseRow[] = [];
   let itemRows: ChecklistItemRow[] = [];
   let photoRows: PhotoRow[] = [];
+  let templateNameById = new Map<string, string>();
 
   if (logIds.length > 0) {
-    const [{ data: responses }, { data: items }, { data: photoData }] = await Promise.all([
+    const [{ data: responses }, { data: items }, { data: photoData }, { data: templateRows }] = await Promise.all([
       supabase
         .from("maintenance_responses")
         .select("maintenance_log_id, checklist_item_id, answer, is_passed")
@@ -184,10 +192,21 @@ export default async function InspectionFormReportPage({
         .in("maintenance_log_id", logIds)
         .order("created_at", { ascending: true })
         .returns<PhotoRow[]>(),
+      // Title source of truth: each printed form's header uses ITS OWN
+      // template's name, instead of a single hardcoded string -- a report
+      // run can span multiple equipment types/templates at once.
+      supabase
+        .from("checklist_templates")
+        .select("id, name, arabic_name")
+        .in("id", templateIds)
+        .returns<ChecklistTemplateNameRow[]>(),
     ]);
     responseRows = responses ?? [];
     itemRows = items ?? [];
     photoRows = photoData ?? [];
+    templateNameById = new Map(
+      (templateRows ?? []).map((tpl) => [tpl.id, (locale === "ar" ? tpl.arabic_name : tpl.name) || tpl.name])
+    );
   }
 
   const responseMap = new Map<string, ResponseRow>();
@@ -341,7 +360,9 @@ export default async function InspectionFormReportPage({
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/zahran.png" alt="Zahran" className="h-12 w-auto justify-self-start object-contain" />
                   <div className="text-center">
-                    <h2 className="text-base font-bold text-primary">{t("title")}</h2>
+                    <h2 className="text-base font-bold text-primary">
+                      {templateNameById.get(form.log.checklist_template_id) ?? t("formTitleFallback")}
+                    </h2>
                     <p className="mt-0.5 text-xs font-medium">{t("facilityName")}</p>
                     <p className="mt-0.5 text-[10px] text-muted">{t("generatedOn", { date: generatedOn })}</p>
                   </div>
@@ -349,11 +370,12 @@ export default async function InspectionFormReportPage({
                   <img src="/kaauh.png" alt="KAAUH" className="h-12 w-auto justify-self-end object-contain" />
                 </div>
 
-                <div className="grid grid-cols-4 gap-x-4 gap-y-2 rounded-md border border-border p-3 text-xs">
+                <div className="grid grid-cols-5 gap-x-4 gap-y-2 rounded-md border border-border p-3 text-xs">
                   <InfoField label={t("info.workOrder")} value={form.log.work_order_number ?? "—"} mono />
                   <InfoField label={t("info.date")} value={formatDate(form.log.maintenance_date, locale)} />
                   <InfoField label={t("info.code")} value={form.equipment.code} mono />
                   <InfoField label={t("info.floor")} value={form.equipment.floor ?? "—"} />
+                  <InfoField label={t("info.zone")} value={form.equipment.zone ?? "—"} />
                   <InfoField label={t("info.room")} value={form.equipment.room_code ?? "—"} />
                   <InfoField label={t("info.roomName")} value={form.equipment.room_name ?? "—"} />
                   <InfoField label={t("info.area")} value={form.equipment.area ?? "—"} />

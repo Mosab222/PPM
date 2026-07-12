@@ -10,6 +10,7 @@ export type ReportRow = {
   equipmentCode: string;
   facility: string | null;
   floor: string | null;
+  zone: string | null;
   room: string | null;
   roomName: string | null;
   area: string | null;
@@ -32,6 +33,7 @@ export function ExportExcelButton({ rows, locale }: { rows: ReportRow[]; locale:
       [tTable("code")]: row.equipmentCode,
       [tTable("facility")]: row.facility ?? "",
       [tTable("floor")]: row.floor ?? "",
+      [tTable("zone")]: row.zone ?? "",
       [tTable("room")]: row.room ?? "",
       [tTable("roomName")]: row.roomName ?? "",
       [tTable("area")]: row.area ?? "",
