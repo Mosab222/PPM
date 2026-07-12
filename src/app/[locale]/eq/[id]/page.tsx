@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
-import { formatDate, formatTime } from "@/lib/format";
+import { formatDate, formatMonthYear, formatTime } from "@/lib/format";
 import { ResultBadge } from "@/components/result-badge";
 import { SchedulingStatusBadge } from "@/components/scheduling-status-badge";
 import { OperationalStatusBadge } from "@/components/operational-status-badge";
@@ -121,7 +121,7 @@ export default async function EquipmentPublicPage({
     [t("area"), equipment.area ?? "—"],
     [t("weight"), equipment.weight != null ? String(equipment.weight) : "—"],
     [t("lastMaintenanceDate"), formatDate(equipment.last_maintenance_date, locale)],
-    [t("nextMaintenanceDate"), formatDate(equipment.next_maintenance_date, locale)],
+    [t("nextMaintenanceDate"), formatMonthYear(equipment.next_maintenance_date, locale)],
   ];
 
   const issuesCount = Number(issues ?? 0);

@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { Link } from "@/i18n/navigation";
 import { StatusBadge } from "@/components/status-badge";
-import { formatDate } from "@/lib/format";
+import { formatMonthYear } from "@/lib/format";
 
 type EquipmentRow = {
   id: string;
@@ -202,7 +202,7 @@ export default async function EquipmentListPage({
                 <td className="px-4 py-2">
                   {row.status ? <StatusBadge status={row.status} /> : "—"}
                 </td>
-                <td className="px-4 py-2">{formatDate(row.next_maintenance_date, locale)}</td>
+                <td className="px-4 py-2">{formatMonthYear(row.next_maintenance_date, locale)}</td>
                 <td className="px-4 py-2">
                   <Link href={`/eq/${row.id}?returnTo=${returnTo}`} className="text-primary underline">
                     {t("table.view")}
