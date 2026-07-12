@@ -43,6 +43,7 @@
     "historyTitle": "Maintenance history",
     "historyEmpty": "No maintenance has been recorded for this equipment yet.",
     "executeMaintenance": "Execute maintenance",
+    "backToList": "Back to equipment list",
     "table": {
       "workOrder": "Work Order No.",
       "date": "Date",
@@ -99,6 +100,7 @@
     "title": "Maintenance checklist",
     "noTemplate": "No checklist template is configured for this equipment yet.",
     "backToEquipment": "Back to equipment",
+    "backToList": "Back to equipment list",
     "yes": "Yes",
     "no": "No",
     "required": "Required",

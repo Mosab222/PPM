@@ -64,10 +64,10 @@ export default async function EquipmentPublicPage({
   searchParams,
 }: {
   params: Promise<{ locale: string; id: string }>;
-  searchParams: Promise<{ submitted?: string; result?: string; issues?: string }>;
+  searchParams: Promise<{ submitted?: string; result?: string; issues?: string; returnTo?: string }>;
 }) {
   const { locale, id } = await params;
-  const { submitted, result: submittedResult, issues } = await searchParams;
+  const { submitted, result: submittedResult, issues, returnTo } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("equipment");
   const tFooter = await getTranslations("footer");
@@ -77,6 +77,11 @@ export default async function EquipmentPublicPage({
   if (!rows || rows.length === 0) {
     return (
       <div className="mx-auto w-full max-w-4xl rounded-lg border border-border bg-card p-8 text-center">
+        {returnTo && (
+          <Link href={returnTo} className="mb-4 inline-block text-sm text-primary underline">
+            {t("backToList")}
+          </Link>
+        )}
         <h1 className="text-xl font-bold text-red-700">{t("notFound")}</h1>
         <p className="mt-2 text-muted">{t("notFoundBody")}</p>
       </div>
@@ -123,6 +128,12 @@ export default async function EquipmentPublicPage({
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+      {returnTo && (
+        <Link href={returnTo} className="self-start text-sm text-primary underline">
+          {t("backToList")}
+        </Link>
+      )}
+
       {submitted === "1" && (
         <div
           className={`rounded-lg border p-4 text-center text-sm font-medium ${
@@ -154,7 +165,7 @@ export default async function EquipmentPublicPage({
         </div>
         {canExecuteMaintenance && (
           <Link
-            href={`/eq/${equipment.equipment_id}/execute`}
+            href={`/eq/${equipment.equipment_id}/execute${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
             prefetch={false}
             className="mt-4 inline-block rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
           >

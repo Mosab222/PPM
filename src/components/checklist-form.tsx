@@ -34,6 +34,7 @@ export function ChecklistForm({
   items,
   initialLogId,
   initialPhotos,
+  returnTo,
 }: {
   equipmentId: string;
   templateId: string;
@@ -41,6 +42,7 @@ export function ChecklistForm({
   items: ChecklistItem[];
   initialLogId: string | null;
   initialPhotos: MaintenancePhoto[];
+  returnTo?: string | null;
 }) {
   const t = useTranslations("checklist");
   const tResult = useTranslations("equipment.result");
@@ -97,6 +99,7 @@ export function ChecklistForm({
         locale,
         existingLogId: logId,
         responses,
+        returnTo: returnTo ?? null,
       });
       if (result?.error) {
         setSubmitError(result.error);

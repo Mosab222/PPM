@@ -1,6 +1,6 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { riyadhDateString, riyadhTimeString } from "@/lib/timezone";
@@ -21,6 +21,7 @@ export type SubmitMaintenanceInput = {
   locale: string;
   existingLogId?: string | null;
   responses: ChecklistResponseInput[];
+  returnTo?: string | null;
 };
 
 export type SubmitMaintenanceResult = { error?: string };
@@ -249,7 +250,13 @@ export async function submitMaintenance(
     }
   }
 
+  const returnToParam = input.returnTo ? `&returnTo=${encodeURIComponent(input.returnTo)}` : "";
+
+  // Explicit "replace" so the execute page's checklist form is overwritten in
+  // browser history rather than pushed under this confirmation page --
+  // browser-back should not resurrect the just-submitted form.
   redirect(
-    `/${input.locale}/eq/${input.equipmentId}?submitted=1&result=${result}&issues=${failingItems.length}`
+    `/${input.locale}/eq/${input.equipmentId}?submitted=1&result=${result}&issues=${failingItems.length}${returnToParam}`,
+    RedirectType.replace
   );
 }

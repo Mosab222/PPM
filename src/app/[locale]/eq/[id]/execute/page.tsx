@@ -35,11 +35,16 @@ export type ChecklistItem = {
 
 export default async function ExecuteMaintenancePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; id: string }>;
+  searchParams: Promise<{ returnTo?: string }>;
 }) {
   const { locale, id } = await params;
+  const { returnTo } = await searchParams;
   setRequestLocale(locale);
+
+  const backToEquipmentHref = `/eq/${id}${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`;
 
   const user = await getCurrentUser();
   if (!user) {
@@ -53,9 +58,14 @@ export default async function ExecuteMaintenancePage({
     return (
       <div className="mx-auto w-full max-w-4xl rounded-lg border border-border bg-card p-8 text-center">
         <p className="text-red-700">{tAuth("inactiveAccount")}</p>
-        <Link href={`/eq/${id}`} className="mt-4 inline-block text-sm text-primary underline">
+        <Link href={backToEquipmentHref} className="mt-4 inline-block text-sm text-primary underline">
           {t("backToEquipment")}
         </Link>
+        {returnTo && (
+          <Link href={returnTo} className="mt-4 ms-4 inline-block text-sm text-primary underline">
+            {t("backToList")}
+          </Link>
+        )}
       </div>
     );
   }
@@ -73,9 +83,14 @@ export default async function ExecuteMaintenancePage({
     return (
       <div className="mx-auto w-full max-w-4xl rounded-lg border border-border bg-card p-8 text-center">
         <p className="text-red-700">{t("noTemplate")}</p>
-        <Link href={`/eq/${id}`} className="mt-4 inline-block text-sm text-primary underline">
+        <Link href={backToEquipmentHref} className="mt-4 inline-block text-sm text-primary underline">
           {t("backToEquipment")}
         </Link>
+        {returnTo && (
+          <Link href={returnTo} className="mt-4 ms-4 inline-block text-sm text-primary underline">
+            {t("backToList")}
+          </Link>
+        )}
       </div>
     );
   }
@@ -96,9 +111,14 @@ export default async function ExecuteMaintenancePage({
     return (
       <div className="mx-auto w-full max-w-4xl rounded-lg border border-border bg-card p-8 text-center">
         <p className="text-red-700">{t("noTemplate")}</p>
-        <Link href={`/eq/${id}`} className="mt-4 inline-block text-sm text-primary underline">
+        <Link href={backToEquipmentHref} className="mt-4 inline-block text-sm text-primary underline">
           {t("backToEquipment")}
         </Link>
+        {returnTo && (
+          <Link href={returnTo} className="mt-4 ms-4 inline-block text-sm text-primary underline">
+            {t("backToList")}
+          </Link>
+        )}
       </div>
     );
   }
@@ -138,6 +158,12 @@ export default async function ExecuteMaintenancePage({
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+      {returnTo && (
+        <Link href={returnTo} className="self-start text-sm text-primary underline">
+          {t("backToList")}
+        </Link>
+      )}
+
       <div className="rounded-lg border border-border bg-card p-6 text-center">
         <p className="text-sm text-muted">{t("title")}</p>
         <p className="mt-1 text-xl font-bold text-primary">{templateName}</p>
@@ -151,6 +177,7 @@ export default async function ExecuteMaintenancePage({
         items={items ?? []}
         initialLogId={existingLog?.id ?? null}
         initialPhotos={initialPhotos}
+        returnTo={returnTo ?? null}
       />
     </div>
   );

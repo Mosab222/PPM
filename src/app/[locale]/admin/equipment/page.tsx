@@ -84,6 +84,14 @@ export default async function EquipmentListPage({
     .order("code", { ascending: true })
     .returns<EquipmentRow[]>();
 
+  const listParams = new URLSearchParams();
+  if (q) listParams.set("q", q);
+  if (facility) listParams.set("facility", facility);
+  if (subtype) listParams.set("subtype", subtype);
+  if (status) listParams.set("status", status);
+  const listQuery = listParams.toString();
+  const returnTo = encodeURIComponent(`/admin/equipment${listQuery ? `?${listQuery}` : ""}`);
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -191,7 +199,7 @@ export default async function EquipmentListPage({
                 </td>
                 <td className="px-4 py-2">{formatDate(row.next_maintenance_date, locale)}</td>
                 <td className="px-4 py-2">
-                  <Link href={`/eq/${row.id}`} className="text-primary underline">
+                  <Link href={`/eq/${row.id}?returnTo=${returnTo}`} className="text-primary underline">
                     {t("table.view")}
                   </Link>
                 </td>
