@@ -52,6 +52,25 @@ export default async function DashboardPage({
 
   const supabase = await createClient();
 
+  // Fired now, awaited later (near where its results are used) -- these
+  // filter-option lookups don't depend on the equipment/logs query below, so
+  // there's no reason to make them wait for it to finish first.
+  const filterListsPromise = Promise.all([
+    supabase
+      .from("equipment_types")
+      .select("id, code, name, arabic_name")
+      .eq("active", true)
+      .returns<FilterType[]>(),
+    supabase
+      .from("equipment_subtypes")
+      .select("id, code, parent_type_id, name, arabic_name")
+      .eq("active", true)
+      .returns<FilterSubtype[]>(),
+    supabase.from("equipment").select("facility_code").eq("deleted", false).not("facility_code", "is", null),
+    supabase.from("equipment").select("floor").eq("deleted", false).not("floor", "is", null),
+    supabase.from("equipment").select("area").eq("deleted", false).not("area", "is", null),
+  ]);
+
   let query = supabase
     .from("equipment")
     .select("id, floor, area, created_at, maintenance_frequency")
@@ -106,21 +125,7 @@ export default async function DashboardPage({
   const chartData = aggregateScheduling(rows, floor ? "area" : "floor");
 
   const [{ data: types }, { data: subtypes }, { data: facilityRows }, { data: floorRows }, { data: areaRows }] =
-    await Promise.all([
-      supabase
-        .from("equipment_types")
-        .select("id, code, name, arabic_name")
-        .eq("active", true)
-        .returns<FilterType[]>(),
-      supabase
-        .from("equipment_subtypes")
-        .select("id, code, parent_type_id, name, arabic_name")
-        .eq("active", true)
-        .returns<FilterSubtype[]>(),
-      supabase.from("equipment").select("facility_code").eq("deleted", false).not("facility_code", "is", null),
-      supabase.from("equipment").select("floor").eq("deleted", false).not("floor", "is", null),
-      supabase.from("equipment").select("area").eq("deleted", false).not("area", "is", null),
-    ]);
+    await filterListsPromise;
 
   const facilities = Array.from(
     new Set((facilityRows ?? []).map((r) => r.facility_code as string))

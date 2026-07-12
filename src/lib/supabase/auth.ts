@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "./server";
 
 export type AppUser = {
@@ -12,7 +13,12 @@ export type AppUser = {
 // Reads the authenticated Supabase user (if any) and joins it with the
 // matching public.users row to get role/name. Returns null when signed out
 // or when no matching users row exists.
-export async function getCurrentUser(): Promise<AppUser | null> {
+// Wrapped in React's cache() so the several layout/page call sites in a
+// single request (root layout, section layout, leaf page) share one lookup
+// instead of each re-hitting Supabase Auth + the users table. This is a
+// per-request cache reset by the framework on every new request, so it
+// carries no cross-request/cross-user staleness risk.
+export const getCurrentUser = cache(async (): Promise<AppUser | null> => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -27,4 +33,4 @@ export async function getCurrentUser(): Promise<AppUser | null> {
     .single();
 
   return (data as AppUser) ?? null;
-}
+});

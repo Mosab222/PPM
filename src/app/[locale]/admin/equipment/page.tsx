@@ -47,23 +47,16 @@ export default async function EquipmentListPage({
 
   const supabase = await createClient();
 
-  const [{ data: types }, { data: subtypes }] = await Promise.all([
+  // Fired now, awaited later (near where its results are used) -- this
+  // lookup doesn't depend on the equipment query below (or vice versa), so
+  // there's no reason to make either wait for the other to finish first.
+  const typesSubtypesPromise = Promise.all([
     supabase.from("equipment_types").select("id, code, name, arabic_name").returns<EquipmentType[]>(),
     supabase
       .from("equipment_subtypes")
       .select("code, name, arabic_name, parent_type_id")
       .returns<EquipmentSubtype[]>(),
   ]);
-
-  const typesById = new Map((types ?? []).map((type) => [type.id, type]));
-  const subtypeLabels = new Map(
-    (subtypes ?? []).map((s) => {
-      const parentType = typesById.get(s.parent_type_id);
-      const subtypeName = (locale === "ar" ? s.arabic_name : s.name) || s.name;
-      const typeName = parentType ? (locale === "ar" ? parentType.arabic_name : parentType.name) || parentType.name : "";
-      return [s.code, typeName ? `${typeName} — ${subtypeName}` : subtypeName];
-    })
-  );
 
   let query = supabase.from("equipment").select("*").eq("deleted", false);
 
@@ -80,9 +73,21 @@ export default async function EquipmentListPage({
     query = query.eq("status", status);
   }
 
-  const { data: equipment } = await query
-    .order("code", { ascending: true })
-    .returns<EquipmentRow[]>();
+  const equipmentPromise = query.order("code", { ascending: true }).returns<EquipmentRow[]>();
+
+  const [{ data: types }, { data: subtypes }] = await typesSubtypesPromise;
+
+  const typesById = new Map((types ?? []).map((type) => [type.id, type]));
+  const subtypeLabels = new Map(
+    (subtypes ?? []).map((s) => {
+      const parentType = typesById.get(s.parent_type_id);
+      const subtypeName = (locale === "ar" ? s.arabic_name : s.name) || s.name;
+      const typeName = parentType ? (locale === "ar" ? parentType.arabic_name : parentType.name) || parentType.name : "";
+      return [s.code, typeName ? `${typeName} — ${subtypeName}` : subtypeName];
+    })
+  );
+
+  const { data: equipment } = await equipmentPromise;
 
   const listParams = new URLSearchParams();
   if (q) listParams.set("q", q);

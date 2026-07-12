@@ -52,6 +52,27 @@ export default async function OperationalStatusPage({
 
   const supabase = await createClient();
 
+  // Fired now, awaited later (near where its results are used) -- these
+  // filter-option lookups don't depend on the equipment/logs query below, so
+  // there's no reason to make them wait for it to finish first.
+  const filterListsPromise = Promise.all([
+    supabase
+      .from("equipment_types")
+      .select("id, code, name, arabic_name")
+      .eq("active", true)
+      .returns<FilterType[]>(),
+    supabase
+      .from("equipment_subtypes")
+      .select("id, code, parent_type_id, name, arabic_name")
+      .eq("active", true)
+      .returns<FilterSubtype[]>(),
+    // Unfiltered so a donut (or the bar chart) can still label equipment
+    // referencing a type that's since been deactivated.
+    supabase.from("equipment_types").select("code, name, arabic_name").returns<TypeLabelRow[]>(),
+    supabase.from("equipment").select("facility_code").eq("deleted", false).not("facility_code", "is", null),
+    supabase.from("equipment").select("area").eq("deleted", false).not("area", "is", null),
+  ]);
+
   let query = supabase
     .from("equipment")
     .select("id, facility_code, floor, type_code, manual_operational_override")
@@ -94,23 +115,7 @@ export default async function OperationalStatusPage({
   }));
 
   const [{ data: types }, { data: subtypes }, { data: allTypesForLabels }, { data: facilityRows }, { data: areaRows }] =
-    await Promise.all([
-      supabase
-        .from("equipment_types")
-        .select("id, code, name, arabic_name")
-        .eq("active", true)
-        .returns<FilterType[]>(),
-      supabase
-        .from("equipment_subtypes")
-        .select("id, code, parent_type_id, name, arabic_name")
-        .eq("active", true)
-        .returns<FilterSubtype[]>(),
-      // Unfiltered so a donut (or the bar chart) can still label equipment
-      // referencing a type that's since been deactivated.
-      supabase.from("equipment_types").select("code, name, arabic_name").returns<TypeLabelRow[]>(),
-      supabase.from("equipment").select("facility_code").eq("deleted", false).not("facility_code", "is", null),
-      supabase.from("equipment").select("area").eq("deleted", false).not("area", "is", null),
-    ]);
+    await filterListsPromise;
 
   const facilities = Array.from(new Set((facilityRows ?? []).map((r) => r.facility_code as string))).sort();
   const areas = Array.from(new Set((areaRows ?? []).map((r) => r.area as string))).sort();

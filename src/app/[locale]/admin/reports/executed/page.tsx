@@ -53,6 +53,24 @@ export default async function ExecutedMaintenanceReportPage({
 
   const supabase = await createClient();
 
+  // Fired now, awaited later (near where its results are used) -- these
+  // filter-option lookups don't depend on the equipment/logs query below, so
+  // there's no reason to make them wait for it to finish first.
+  const filterListsPromise = Promise.all([
+    supabase
+      .from("equipment_types")
+      .select("id, code, name, arabic_name")
+      .eq("active", true)
+      .returns<FilterType[]>(),
+    supabase
+      .from("equipment_subtypes")
+      .select("id, code, parent_type_id, name, arabic_name")
+      .eq("active", true)
+      .returns<FilterSubtype[]>(),
+    supabase.from("equipment").select("floor").eq("deleted", false).not("floor", "is", null),
+    supabase.from("equipment").select("area").eq("deleted", false).not("area", "is", null),
+  ]);
+
   let equipmentQuery = supabase
     .from("equipment")
     .select("id, code, type_code, subtype_code, floor, area, room_name")
@@ -92,20 +110,7 @@ export default async function ExecutedMaintenanceReportPage({
   const passedCount = rows.filter((r) => r.result === "passed").length;
   const needsAttentionCount = rows.filter((r) => r.result === "needs_attention").length;
 
-  const [{ data: types }, { data: subtypes }, { data: floorRows }, { data: areaRows }] = await Promise.all([
-    supabase
-      .from("equipment_types")
-      .select("id, code, name, arabic_name")
-      .eq("active", true)
-      .returns<FilterType[]>(),
-    supabase
-      .from("equipment_subtypes")
-      .select("id, code, parent_type_id, name, arabic_name")
-      .eq("active", true)
-      .returns<FilterSubtype[]>(),
-    supabase.from("equipment").select("floor").eq("deleted", false).not("floor", "is", null),
-    supabase.from("equipment").select("area").eq("deleted", false).not("area", "is", null),
-  ]);
+  const [{ data: types }, { data: subtypes }, { data: floorRows }, { data: areaRows }] = await filterListsPromise;
 
   const floors = Array.from(new Set((floorRows ?? []).map((r) => r.floor as string))).sort();
   const areas = Array.from(new Set((areaRows ?? []).map((r) => r.area as string))).sort();
