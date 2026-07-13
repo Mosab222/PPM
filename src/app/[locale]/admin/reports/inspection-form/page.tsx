@@ -35,7 +35,14 @@ type MaintenanceLogRow = {
   maintenance_date: string | null;
   maintenance_time: string | null;
   technician_name: string | null;
+  approval_status: string | null;
+  head_user_id: string | null;
+  manager_user_id: string | null;
+  rejected_by_role: string | null;
+  rejection_reason: string | null;
 };
+
+type ApproverRow = { id: string; full_name: string | null; arabic_name: string | null };
 
 type ChecklistItemRow = {
   id: string;
@@ -151,7 +158,9 @@ export default async function InspectionFormReportPage({
 
   let logQuery = supabase
     .from("maintenance_logs")
-    .select("id, equipment_id, checklist_template_id, work_order_number, maintenance_date, maintenance_time, technician_name")
+    .select(
+      "id, equipment_id, checklist_template_id, work_order_number, maintenance_date, maintenance_time, technician_name, approval_status, head_user_id, manager_user_id, rejected_by_role, rejection_reason"
+    )
     .eq("status", "completed")
     .eq("deleted", false)
     .in("equipment_id", equipmentIds.length > 0 ? equipmentIds : [NO_MATCH_SENTINEL]);
@@ -172,6 +181,23 @@ export default async function InspectionFormReportPage({
   let itemRows: ChecklistItemRow[] = [];
   let photoRows: PhotoRow[] = [];
   let templateNameById = new Map<string, string>();
+  let approverNameById = new Map<string, string>();
+
+  const approverIds = Array.from(
+    new Set(
+      logRows.flatMap((l) => [l.head_user_id, l.manager_user_id]).filter((id): id is string => id != null)
+    )
+  );
+  if (approverIds.length > 0) {
+    const { data: approvers } = await supabase
+      .from("users")
+      .select("id, full_name, arabic_name")
+      .in("id", approverIds)
+      .returns<ApproverRow[]>();
+    approverNameById = new Map(
+      (approvers ?? []).map((a) => [a.id, (locale === "ar" ? a.arabic_name : a.full_name) || a.full_name || a.arabic_name || ""])
+    );
+  }
 
   if (logIds.length > 0) {
     const [{ data: responses }, { data: items }, { data: photoData }, { data: templateRows }] = await Promise.all([
@@ -237,6 +263,15 @@ export default async function InspectionFormReportPage({
         return { item, answer: response?.answer ?? null, isPassed: response?.is_passed ?? null };
       }),
       photos: photosByLog.get(log.id) ?? [],
+      // "Evaluated by" fills in as soon as the head has made ANY decision on
+      // this log (approve-to-next-stage or reject) -- it means "someone
+      // evaluated this," not "this passed." "Approved by" is stricter: it
+      // only fills in on true final approval, never on rejection.
+      evaluatedByName: log.head_user_id ? approverNameById.get(log.head_user_id) ?? null : null,
+      approvedByName:
+        log.approval_status === "approved" && log.manager_user_id
+          ? approverNameById.get(log.manager_user_id) ?? null
+          : null,
     }));
 
   const [{ data: types }, { data: subtypes }, { data: floorRows }, { data: areaRows }] = await filterListsPromise;
@@ -425,11 +460,11 @@ export default async function InspectionFormReportPage({
                   </div>
                   <div className="rounded-md border border-border p-2">
                     <p className="font-medium">{t("signatures.evaluatedBy")}</p>
-                    <p className="mt-5 border-t border-border pt-1">&nbsp;</p>
+                    <p className="mt-5 border-t border-border pt-1">{form.evaluatedByName || " "}</p>
                   </div>
                   <div className="rounded-md border border-border p-2">
                     <p className="font-medium">{t("signatures.approvedBy")}</p>
-                    <p className="mt-5 border-t border-border pt-1">&nbsp;</p>
+                    <p className="mt-5 border-t border-border pt-1">{form.approvedByName || " "}</p>
                   </div>
                 </div>
               </div>

@@ -12,6 +12,7 @@
     "welcomeBack": "Welcome back, {name}.",
     "goToDashboard": "Go to dashboard",
     "goToArea": "Go to my area",
+    "goToApprovals": "Go to approvals",
     "scanHint": "Scan an equipment's QR code with your phone's camera to view its history and execute maintenance."
   },
   "nav": {
@@ -134,6 +135,7 @@
       "types": "Types",
       "users": "Users",
       "reports": "Reports",
+      "approvals": "Approvals",
       "toggleSidebar": "Toggle sidebar"
     },
     "reports": {
@@ -621,6 +623,58 @@
           "submitError": "Something went wrong. Please try again."
         }
       }
+    }
+  },
+  "approvals": {
+    "title": "Approvals",
+    "titleHead": "Pending Head of Department Review",
+    "titleManager": "Pending Manager Review",
+    "tabs": {
+      "head": "Pending Head Review",
+      "manager": "Pending Manager Review"
+    },
+    "empty": "Nothing is waiting for your decision right now.",
+    "selectAll": "Select all",
+    "approve": "Approve",
+    "reject": "Reject",
+    "processing": "Processing…",
+    "table": {
+      "equipment": "Equipment",
+      "typeSubtype": "Type / Subtype",
+      "location": "Location",
+      "technician": "Technician",
+      "date": "Date",
+      "result": "Result",
+      "issues": "Issues",
+      "view": "View"
+    },
+    "rejectModal": {
+      "title": "Reject maintenance log(s)",
+      "body": "This reason will be recorded on all {count} selected log(s). This cannot be undone.",
+      "placeholder": "Explain why this maintenance is being rejected…",
+      "cancel": "Cancel",
+      "confirm": "Confirm rejection"
+    },
+    "errors": {
+      "unauthorized": "You're not authorized to make this decision.",
+      "missingReason": "Please enter a rejection reason.",
+      "dbRejected": "The server rejected this change: {detail}",
+      "someAlreadyDecided": "{succeeded} log(s) were updated, but {lost} were already decided by someone else and were skipped."
+    },
+    "detail": {
+      "backToQueue": "Back to queue",
+      "workOrder": "Work Order No.",
+      "date": "Date",
+      "time": "Time",
+      "technician": "Technician",
+      "checklistTitle": "Checklist",
+      "question": "Question",
+      "answer": "Answer",
+      "notes": "Notes",
+      "photosTitle": "Photos",
+      "noPhotos": "No photos were attached.",
+      "alreadyDecided": "This log has already moved on and is no longer awaiting your decision.",
+      "readOnlyAdmin": "You're viewing this as admin — read-only. Admins cannot approve or reject."
     }
   },
   "tech": {

@@ -24,6 +24,10 @@ export default async function TechLayout({
     redirect(`/${locale}/admin/dashboard`);
   }
 
+  if (user.role === "head" || user.role === "manager") {
+    redirect(`/${locale}/approvals`);
+  }
+
   const cookieStore = await cookies();
   const sidebarCollapsed = cookieStore.get(SIDEBAR_COLLAPSE_COOKIE)?.value === "1";
 

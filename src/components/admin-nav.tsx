@@ -1,7 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { LayoutDashboard, Activity, Wrench, Tags, Users, FileBarChart, ChevronsLeft, ChevronsRight } from "lucide-react";
+import {
+  LayoutDashboard,
+  Activity,
+  Wrench,
+  Tags,
+  Users,
+  FileBarChart,
+  ClipboardCheck,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { setSidebarCollapsedCookie } from "@/lib/sidebar-cookie";
@@ -13,6 +23,7 @@ const NAV_ITEMS = [
   { href: "/admin/types", key: "types", Icon: Tags },
   { href: "/admin/users", key: "users", Icon: Users },
   { href: "/admin/reports", key: "reports", Icon: FileBarChart },
+  { href: "/approvals", key: "approvals", Icon: ClipboardCheck },
 ] as const;
 
 export function AdminNav({ initialCollapsed }: { initialCollapsed: boolean }) {

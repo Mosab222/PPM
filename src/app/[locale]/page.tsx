@@ -62,6 +62,18 @@ export default async function HomePage({
             <p className="text-xs text-muted">{tHome("scanHint")}</p>
           </div>
         )}
+
+        {user && (user.role === "head" || user.role === "manager") && (
+          <div className="flex flex-col items-center gap-4">
+            <p className="text-sm text-muted">{tHome("welcomeBack", { name: name ?? "" })}</p>
+            <Link
+              href="/approvals"
+              className="rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground"
+            >
+              {tHome("goToApprovals")}
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
