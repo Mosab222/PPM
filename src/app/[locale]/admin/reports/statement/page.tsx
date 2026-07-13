@@ -31,6 +31,7 @@ type EquipmentRow = {
 type MaintenanceLogRow = {
   equipment_id: string;
   result: string | null;
+  approval_status: string | null;
   maintenance_date: string | null;
   maintenance_time: string | null;
 };
@@ -96,7 +97,7 @@ export default async function PmStatementPage({
 
   const { data: logs } = await supabase
     .from("maintenance_logs")
-    .select("equipment_id, result, maintenance_date, maintenance_time")
+    .select("equipment_id, result, approval_status, maintenance_date, maintenance_time")
     .eq("status", "completed")
     .eq("deleted", false)
     .in("equipment_id", equipmentIds.length > 0 ? equipmentIds : [NO_MATCH_SENTINEL])
@@ -104,15 +105,15 @@ export default async function PmStatementPage({
     .order("maintenance_time", { ascending: false, nullsFirst: false })
     .returns<MaintenanceLogRow[]>();
 
-  // Logs are ordered newest-first. The operational status always reflects the
-  // true latest completed result (unbounded by the date filter — it's a
-  // real-time equipment attribute), while the "Last Maintenance" column shows
-  // the latest completion that also falls inside the selected [from, to]
-  // range, per the report's own period.
+  // Logs are ordered newest-first. The operational status must only reflect
+  // an APPROVED result (a pending/rejected claim shouldn't flip the badge),
+  // while the "Last Maintenance" column intentionally stays unfiltered by
+  // approval for now (Phase 3) and shows the latest completion that falls
+  // inside the selected [from, to] range, per the report's own period.
   const latestResultByEquipment = new Map<string, string | null>();
   const latestDateInRangeByEquipment = new Map<string, string>();
   for (const log of logs ?? []) {
-    if (!latestResultByEquipment.has(log.equipment_id)) {
+    if (log.approval_status === "approved" && !latestResultByEquipment.has(log.equipment_id)) {
       latestResultByEquipment.set(log.equipment_id, log.result);
     }
     if (!log.maintenance_date) continue;

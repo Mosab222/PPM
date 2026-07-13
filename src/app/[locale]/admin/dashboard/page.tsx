@@ -15,7 +15,7 @@ import {
   type SchedulingBucket,
 } from "@/lib/scheduling";
 
-const SCHEDULE_VALUES = ["done", "scheduled", "overdue"] as const;
+const SCHEDULE_VALUES = ["done", "scheduled", "pending_approval", "overdue"] as const;
 const NO_MATCH_SENTINEL = "__no_match__";
 
 type EquipmentRow = {
@@ -29,6 +29,11 @@ type EquipmentRow = {
 type MaintenanceLogRow = {
   equipment_id: string;
   maintenance_date: string;
+  approval_status: string;
+};
+
+type PendingLogRow = {
+  equipment_id: string;
 };
 
 export default async function DashboardPage({
@@ -93,28 +98,42 @@ export default async function DashboardPage({
   const equipmentIds = equipmentRows.map((e) => e.id);
   const { data: logs } = await supabase
     .from("maintenance_logs")
-    .select("equipment_id, maintenance_date")
+    .select("equipment_id, maintenance_date, approval_status")
     .eq("status", "completed")
     .eq("deleted", false)
     .gte("maintenance_date", previousMonthStartIso)
     .in("equipment_id", equipmentIds.length > 0 ? equipmentIds : [NO_MATCH_SENTINEL])
     .returns<MaintenanceLogRow[]>();
 
-  const currentMonthCompleted = new Set<string>();
-  const previousMonthCompleted = new Set<string>();
+  // Pending approval has no time bound (a log can sit unresolved for weeks),
+  // unlike current/previous month completion above -- so it's queried
+  // separately, unbounded by date, rather than widening the query above.
+  const { data: pendingLogs } = await supabase
+    .from("maintenance_logs")
+    .select("equipment_id")
+    .in("approval_status", ["pending_head", "pending_manager"])
+    .eq("deleted", false)
+    .in("equipment_id", equipmentIds.length > 0 ? equipmentIds : [NO_MATCH_SENTINEL])
+    .returns<PendingLogRow[]>();
+
+  const currentMonthApproved = new Set<string>();
+  const previousMonthApproved = new Set<string>();
   for (const log of logs ?? []) {
+    if (log.approval_status !== "approved") continue; // rejected -- doesn't count
     const logMonth = monthKey(log.maintenance_date);
-    if (logMonth === currentMonth) currentMonthCompleted.add(log.equipment_id);
-    else if (logMonth === previousMonth) previousMonthCompleted.add(log.equipment_id);
+    if (logMonth === currentMonth) currentMonthApproved.add(log.equipment_id);
+    else if (logMonth === previousMonth) previousMonthApproved.add(log.equipment_id);
   }
+  const pendingApproval = new Set((pendingLogs ?? []).map((l) => l.equipment_id));
 
   const classified = equipmentRows.map((row) => ({
     ...row,
     bucket: classifySchedulingStatus({
       frequency: row.maintenance_frequency,
       createdAt: row.created_at,
-      hasCurrentMonthCompletion: currentMonthCompleted.has(row.id),
-      hasPreviousMonthCompletion: previousMonthCompleted.has(row.id),
+      hasCurrentMonthApproval: currentMonthApproved.has(row.id),
+      hasPreviousMonthApproval: previousMonthApproved.has(row.id),
+      hasPendingApproval: pendingApproval.has(row.id),
       todayIso,
     }),
   }));
@@ -236,7 +255,7 @@ export default async function DashboardPage({
         </Link>
       </form>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
         <SummaryCard label={t("cards.total")} value={formatNumber(summary.total, locale)} />
         <SummaryCard
           label={t("cards.completed")}
@@ -247,6 +266,11 @@ export default async function DashboardPage({
           label={t("cards.scheduled")}
           value={formatNumber(summary.scheduled, locale)}
           color="amber"
+        />
+        <SummaryCard
+          label={t("cards.pendingApproval")}
+          value={formatNumber(summary.pendingApproval, locale)}
+          color="blue"
         />
         <SummaryCard
           label={t("cards.overdue")}

@@ -35,6 +35,7 @@ type EquipmentHistoryRow = {
   maintenance_time: string | null;
   technician_name: string | null;
   result: string | null;
+  approval_status: string | null;
   photo_urls: string[] | null;
 };
 
@@ -96,19 +97,30 @@ export default async function EquipmentPublicPage({
   const todayIso = new Date().toISOString();
   const currentMonth = monthKey(todayIso);
   const previousMonth = previousMonthKey(currentMonth);
-  const latestLogMonth = equipment.maintenance_date ? monthKey(equipment.maintenance_date) : null;
+
+  // rows[0] is just whatever log is newest -- it could be pending or
+  // rejected, not necessarily approved -- so scheduling/operational status
+  // must scan the full history rather than trusting rows[0] directly. `rows`
+  // is already ordered newest-first by the query, so filtering preserves order.
+  const approvedRows = rows.filter((row) => row.approval_status === "approved" && row.maintenance_date !== null);
+  const hasPendingApproval = rows.some(
+    (row) => row.approval_status === "pending_head" || row.approval_status === "pending_manager"
+  );
+  const latestApproved = approvedRows[0];
+  const latestApprovedMonth = latestApproved?.maintenance_date ? monthKey(latestApproved.maintenance_date) : null;
 
   const schedulingBucket = classifySchedulingStatus({
     frequency: equipment.maintenance_frequency,
     createdAt: equipment.created_at,
-    hasCurrentMonthCompletion: latestLogMonth === currentMonth,
-    hasPreviousMonthCompletion: latestLogMonth === previousMonth,
+    hasCurrentMonthApproval: latestApprovedMonth === currentMonth,
+    hasPreviousMonthApproval: latestApprovedMonth === previousMonth,
+    hasPendingApproval,
     todayIso,
   });
 
   const operationalStatus = classifyOperationalStatus({
     manualOverride: equipment.manual_operational_override,
-    latestCompletedResult: equipment.result,
+    latestCompletedResult: latestApproved?.result ?? null,
   });
 
   const details: Array<[string, React.ReactNode]> = [

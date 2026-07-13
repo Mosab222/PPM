@@ -67,6 +67,7 @@
     "scheduling_status_value": {
       "done": "Completed",
       "scheduled": "Scheduled",
+      "pending_approval": "Pending Approval",
       "overdue": "Overdue"
     },
     "operational_status_value": {
@@ -305,6 +306,7 @@
         "total": "Total equipment",
         "completed": "Completed",
         "scheduled": "Scheduled",
+        "pendingApproval": "Pending Approval",
         "overdue": "Overdue"
       },
       "chart": {
@@ -313,6 +315,7 @@
         "backToFloors": "← Back to all floors",
         "done": "Completed",
         "scheduled": "Scheduled",
+        "pending_approval": "Pending Approval",
         "overdue": "Overdue",
         "empty": "No equipment matches the current filters."
       },

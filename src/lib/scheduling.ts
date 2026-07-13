@@ -7,12 +7,13 @@
 
 import { riyadhMonthKey } from "./timezone";
 
-export type SchedulingBucket = "done" | "scheduled" | "overdue";
+export type SchedulingBucket = "done" | "scheduled" | "pending_approval" | "overdue";
 
 export type SchedulingChartDatum = {
   label: string;
   done: number;
   scheduled: number;
+  pending_approval: number;
   overdue: number;
 };
 
@@ -20,6 +21,7 @@ export type SchedulingSummary = {
   total: number;
   completed: number;
   scheduled: number;
+  pendingApproval: number;
   overdue: number;
 };
 
@@ -44,27 +46,37 @@ export function previousMonthKey(key: string): string {
 export function classifySchedulingStatus(params: {
   frequency: string | null;
   createdAt: string;
-  hasCurrentMonthCompletion: boolean;
-  hasPreviousMonthCompletion: boolean;
+  hasCurrentMonthApproval: boolean;
+  hasPreviousMonthApproval: boolean;
+  hasPendingApproval: boolean;
   todayIso?: string;
 }): SchedulingBucket {
   const todayIso = params.todayIso ?? new Date().toISOString();
   const currentMonth = monthKey(todayIso);
 
-  if (params.hasCurrentMonthCompletion) return "done";
+  if (params.hasCurrentMonthApproval) return "done";
+
+  if (params.hasPendingApproval) return "pending_approval";
 
   if (monthKey(params.createdAt) === currentMonth) return "scheduled";
 
-  if (params.hasPreviousMonthCompletion) return "scheduled";
+  if (params.hasPreviousMonthApproval) return "scheduled";
 
   return "overdue";
 }
 
 export function summarizeScheduling(buckets: SchedulingBucket[]): SchedulingSummary {
-  const summary: SchedulingSummary = { total: buckets.length, completed: 0, scheduled: 0, overdue: 0 };
+  const summary: SchedulingSummary = {
+    total: buckets.length,
+    completed: 0,
+    scheduled: 0,
+    pendingApproval: 0,
+    overdue: 0,
+  };
   for (const bucket of buckets) {
     if (bucket === "done") summary.completed++;
     else if (bucket === "scheduled") summary.scheduled++;
+    else if (bucket === "pending_approval") summary.pendingApproval++;
     else summary.overdue++;
   }
   return summary;
@@ -79,7 +91,7 @@ export function aggregateScheduling(
   for (const row of rows) {
     const label = (groupBy === "floor" ? row.floor : row.area) || "—";
     if (!map.has(label)) {
-      map.set(label, { label, done: 0, scheduled: 0, overdue: 0 });
+      map.set(label, { label, done: 0, scheduled: 0, pending_approval: 0, overdue: 0 });
     }
     map.get(label)![row.bucket] += 1;
   }

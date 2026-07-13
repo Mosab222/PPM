@@ -16,11 +16,12 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import type { SchedulingChartDatum } from "@/lib/scheduling";
 
-const COLORS = { done: "#16a34a", scheduled: "#d97706", overdue: "#dc2626" };
+const COLORS = { done: "#16a34a", scheduled: "#d97706", pending_approval: "#2563eb", overdue: "#dc2626" };
 
-const LEGEND_KEYS: Record<string, "done" | "scheduled" | "overdue"> = {
+const LEGEND_KEYS: Record<string, "done" | "scheduled" | "pending_approval" | "overdue"> = {
   done: "done",
   scheduled: "scheduled",
+  pending_approval: "pending_approval",
   overdue: "overdue",
 };
 
@@ -59,7 +60,7 @@ export function ComplianceChart({
         <YAxis allowDecimals={false} tickFormatter={formatNumber} />
         <Tooltip formatter={(value) => formatNumber(Number(value))} />
         <Legend formatter={(value: string) => t(LEGEND_KEYS[value] ?? "done")} />
-        {(["done", "scheduled", "overdue"] as const).map((key) => (
+        {(["done", "scheduled", "pending_approval", "overdue"] as const).map((key) => (
           <Bar
             key={key}
             dataKey={key}

@@ -67,6 +67,7 @@
     "scheduling_status_value": {
       "done": "منجزة",
       "scheduled": "مجدولة",
+      "pending_approval": "بانتظار الاعتماد",
       "overdue": "متأخرة"
     },
     "operational_status_value": {
@@ -305,6 +306,7 @@
         "total": "إجمالي المعدات",
         "completed": "منجزة",
         "scheduled": "مجدولة",
+        "pendingApproval": "بانتظار الاعتماد",
         "overdue": "متأخرة"
       },
       "chart": {
@@ -313,6 +315,7 @@
         "backToFloors": "→ الرجوع إلى كل الطوابق",
         "done": "منجزة",
         "scheduled": "مجدولة",
+        "pending_approval": "بانتظار الاعتماد",
         "overdue": "متأخرة",
         "empty": "لا توجد معدات مطابقة للمرشحات الحالية."
       },

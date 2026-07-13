@@ -91,6 +91,7 @@ export default async function OperationalStatusPage({
     .from("maintenance_logs")
     .select("equipment_id, result, maintenance_date, maintenance_time")
     .eq("status", "completed")
+    .eq("approval_status", "approved")
     .eq("deleted", false)
     .in("equipment_id", equipmentIds.length > 0 ? equipmentIds : [NO_MATCH_SENTINEL])
     .order("maintenance_date", { ascending: false, nullsFirst: false })

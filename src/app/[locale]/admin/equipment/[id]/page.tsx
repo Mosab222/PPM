@@ -35,6 +35,7 @@ export default async function EditEquipmentPage({
     .select("result")
     .eq("equipment_id", id)
     .eq("status", "completed")
+    .eq("approval_status", "approved")
     .eq("deleted", false)
     .order("maintenance_date", { ascending: false, nullsFirst: false })
     .order("maintenance_time", { ascending: false, nullsFirst: false })
