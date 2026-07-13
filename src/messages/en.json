@@ -384,7 +384,9 @@
       "empty": "No users found.",
       "role_value": {
         "admin": "Admin",
-        "technician": "Technician"
+        "technician": "Technician",
+        "head": "Head of Department",
+        "manager": "Manager"
       },
       "new": {
         "title": "Add user",

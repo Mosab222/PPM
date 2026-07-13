@@ -8,7 +8,7 @@ export type UpdateUserInput = {
   userId: string;
   fullName: string;
   arabicName: string;
-  role: "admin" | "technician";
+  role: "admin" | "technician" | "head" | "manager";
   isActive: boolean;
 };
 

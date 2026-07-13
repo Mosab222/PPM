@@ -384,7 +384,9 @@
       "empty": "لم يتم العثور على مستخدمين.",
       "role_value": {
         "admin": "مسؤول",
-        "technician": "فني"
+        "technician": "فني",
+        "head": "رئيس القسم",
+        "manager": "المدير"
       },
       "new": {
         "title": "إضافة مستخدم",

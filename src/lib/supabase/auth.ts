@@ -6,7 +6,7 @@ export type AppUser = {
   email: string;
   full_name: string | null;
   arabic_name: string | null;
-  role: "admin" | "technician";
+  role: "admin" | "technician" | "head" | "manager";
   is_active: boolean;
 };
 

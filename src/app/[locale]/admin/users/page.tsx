@@ -7,7 +7,7 @@ type UserRow = {
   full_name: string | null;
   arabic_name: string | null;
   email: string;
-  role: "admin" | "technician";
+  role: "admin" | "technician" | "head" | "manager";
   is_active: boolean;
 };
 
@@ -70,6 +70,8 @@ export default async function UsersListPage({
             <option value="">{t("allRoles")}</option>
             <option value="admin">{t("role_value.admin")}</option>
             <option value="technician">{t("role_value.technician")}</option>
+            <option value="head">{t("role_value.head")}</option>
+            <option value="manager">{t("role_value.manager")}</option>
           </select>
         </div>
         <button

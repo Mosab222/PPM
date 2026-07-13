@@ -10,7 +10,7 @@ export type EditableUser = {
   full_name: string | null;
   arabic_name: string | null;
   email: string;
-  role: "admin" | "technician";
+  role: "admin" | "technician" | "head" | "manager";
   is_active: boolean;
 };
 
@@ -19,7 +19,7 @@ export function UserEditForm({ user }: { user: EditableUser }) {
   const tRole = useTranslations("admin.users.role_value");
   const [fullName, setFullName] = useState(user.full_name ?? "");
   const [arabicName, setArabicName] = useState(user.arabic_name ?? "");
-  const [role, setRole] = useState<"admin" | "technician">(user.role);
+  const [role, setRole] = useState<"admin" | "technician" | "head" | "manager">(user.role);
   const [isActive, setIsActive] = useState(user.is_active);
   const [error, setError] = useState<"unauthorized" | "submitError" | "selfLockout" | null>(null);
   const [saved, setSaved] = useState(false);
@@ -76,11 +76,13 @@ export function UserEditForm({ user }: { user: EditableUser }) {
         <label className="mb-1 block text-sm font-medium">{t("role")}</label>
         <select
           value={role}
-          onChange={(e) => setRole(e.target.value as "admin" | "technician")}
+          onChange={(e) => setRole(e.target.value as "admin" | "technician" | "head" | "manager")}
           className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
         >
           <option value="admin">{tRole("admin")}</option>
           <option value="technician">{tRole("technician")}</option>
+          <option value="head">{tRole("head")}</option>
+          <option value="manager">{tRole("manager")}</option>
         </select>
       </div>
 

@@ -11,7 +11,7 @@ export function LinkUserForm({ locale }: { locale: string }) {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [arabicName, setArabicName] = useState("");
-  const [role, setRole] = useState<"admin" | "technician">("technician");
+  const [role, setRole] = useState<"admin" | "technician" | "head" | "manager">("technician");
   const [isActive, setIsActive] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -94,11 +94,13 @@ export function LinkUserForm({ locale }: { locale: string }) {
         <label className="mb-1 block text-sm font-medium">{t("role")}</label>
         <select
           value={role}
-          onChange={(e) => setRole(e.target.value as "admin" | "technician")}
+          onChange={(e) => setRole(e.target.value as "admin" | "technician" | "head" | "manager")}
           className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
         >
           <option value="technician">{tRole("technician")}</option>
           <option value="admin">{tRole("admin")}</option>
+          <option value="head">{tRole("head")}</option>
+          <option value="manager">{tRole("manager")}</option>
         </select>
       </div>
 
