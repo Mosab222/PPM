@@ -170,6 +170,15 @@ export default async function ExecuteMaintenancePage({
         <p className="mt-1 font-mono text-sm text-muted">{equipment.code}</p>
       </div>
 
+      {!user.signature_url && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
+          {t("signatureRequired")}{" "}
+          <Link href="/account" className="font-medium underline">
+            {t("goToAccount")}
+          </Link>
+        </div>
+      )}
+
       <ChecklistForm
         equipmentId={equipment.id}
         templateId={template.id}
@@ -178,6 +187,7 @@ export default async function ExecuteMaintenancePage({
         initialLogId={existingLog?.id ?? null}
         initialPhotos={initialPhotos}
         returnTo={returnTo ?? null}
+        hasSignature={Boolean(user.signature_url)}
       />
     </div>
   );

@@ -52,6 +52,9 @@ export function ApprovalActions({
       setError(t(`errors.${result.error}`));
       return;
     }
+    if (result.signatureWarning) {
+      setError(t("errors.signatureWarning"));
+    }
     afterSuccess();
   }
 

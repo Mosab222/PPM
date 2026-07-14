@@ -146,11 +146,20 @@ export default async function ApprovalsPage({
 
   const queueStatus = user.role === "head" ? "pending_head" : "pending_manager";
   const rows = await fetchQueue(queueStatus, locale);
+  const hasSignature = Boolean(user.signature_url);
 
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-xl font-bold">{t(user.role === "head" ? "titleHead" : "titleManager")}</h1>
-      <ApprovalQueueTable rows={rows} canAct={true} locale={locale} />
+      {!hasSignature && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
+          {t("signatureRequired")}{" "}
+          <Link href="/account" className="font-medium underline">
+            {t("goToAccount")}
+          </Link>
+        </div>
+      )}
+      <ApprovalQueueTable rows={rows} canAct={hasSignature} locale={locale} />
     </div>
   );
 }

@@ -97,9 +97,11 @@ export default async function ApprovalDetailPage({
 
   if (!log) notFound();
 
-  const canAct =
+  const stageMatches =
     (user.role === "head" && log.approval_status === "pending_head") ||
     (user.role === "manager" && log.approval_status === "pending_manager");
+  const hasSignature = Boolean(user.signature_url);
+  const canAct = stageMatches && hasSignature;
 
   const [{ data: equipment }, { data: items }, { data: responses }, { data: photos }] = await Promise.all([
     supabase
@@ -221,6 +223,13 @@ export default async function ApprovalDetailPage({
         <ApprovalActions logIds={[log.id]} onAfterAction="navigateToQueue" />
       ) : user.role === "admin" ? (
         <p className="text-sm text-muted">{t("detail.readOnlyAdmin")}</p>
+      ) : stageMatches && !hasSignature ? (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
+          {t("signatureRequired")}{" "}
+          <Link href="/account" className="font-medium underline">
+            {t("goToAccount")}
+          </Link>
+        </div>
       ) : (
         <p className="text-sm text-muted">{t("detail.alreadyDecided")}</p>
       )}

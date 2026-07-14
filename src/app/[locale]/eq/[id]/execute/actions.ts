@@ -4,6 +4,7 @@ import { redirect, RedirectType } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { riyadhDateString, riyadhTimeString } from "@/lib/timezone";
+import { copySignatureSnapshot } from "@/lib/signature";
 
 export type ChecklistResponseInput = {
   checklistItemId: string;
@@ -147,6 +148,10 @@ export async function submitMaintenance(
     return { error: "unauthorized" };
   }
 
+  if (!user.signature_url || !user.signature_storage_path) {
+    return { error: "noSignature" };
+  }
+
   const supabase = await createClient();
 
   // Only required/critical failing items count as issues; a failing
@@ -220,9 +225,14 @@ export async function submitMaintenance(
     logId = log.id;
   }
 
+  // logId is always assigned by this point (either branch above sets it) --
+  // narrowed to a plain string once here so it can be reused below without
+  // TypeScript still seeing the original `string | null` declaration.
+  const finalizedLogId = logId!;
+
   const { error: responsesError } = await supabase.from("maintenance_responses").insert(
     input.responses.map((r) => ({
-      maintenance_log_id: logId,
+      maintenance_log_id: finalizedLogId,
       checklist_item_id: r.checklistItemId,
       answer: r.answer,
       is_passed: r.isPassed,
@@ -237,7 +247,7 @@ export async function submitMaintenance(
   if (failingItems.length > 0) {
     const { error: issuesError } = await supabase.from("maintenance_issues").insert(
       failingItems.map((r) => ({
-        maintenance_log_id: logId,
+        maintenance_log_id: finalizedLogId,
         equipment_id: input.equipmentId,
         checklist_item_id: r.checklistItemId,
         issue_description: r.note?.trim() || r.fallbackDescription,
@@ -250,13 +260,32 @@ export async function submitMaintenance(
     }
   }
 
+  // A transient storage hiccup here shouldn't cost the technician their
+  // entire completed checklist -- the log above is already saved. Warn via
+  // the redirect's query string rather than fail the submission.
+  const snapshot = await copySignatureSnapshot(supabase, {
+    fromPath: user.signature_storage_path,
+    logId: finalizedLogId,
+    role: "technician",
+  });
+  let signatureWarning = false;
+  if (snapshot.url) {
+    await supabase
+      .from("maintenance_logs")
+      .update({ technician_signature_url: snapshot.url })
+      .eq("id", finalizedLogId);
+  } else {
+    signatureWarning = true;
+  }
+
   const returnToParam = input.returnTo ? `&returnTo=${encodeURIComponent(input.returnTo)}` : "";
+  const signatureWarningParam = signatureWarning ? "&signatureWarning=1" : "";
 
   // Explicit "replace" so the execute page's checklist form is overwritten in
   // browser history rather than pushed under this confirmation page --
   // browser-back should not resurrect the just-submitted form.
   redirect(
-    `/${input.locale}/eq/${input.equipmentId}?submitted=1&result=${result}&issues=${failingItems.length}${returnToParam}`,
+    `/${input.locale}/eq/${input.equipmentId}?submitted=1&result=${result}&issues=${failingItems.length}${signatureWarningParam}${returnToParam}`,
     RedirectType.replace
   );
 }

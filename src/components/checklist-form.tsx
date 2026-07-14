@@ -35,6 +35,7 @@ export function ChecklistForm({
   initialLogId,
   initialPhotos,
   returnTo,
+  hasSignature,
 }: {
   equipmentId: string;
   templateId: string;
@@ -43,6 +44,7 @@ export function ChecklistForm({
   initialLogId: string | null;
   initialPhotos: MaintenancePhoto[];
   returnTo?: string | null;
+  hasSignature: boolean;
 }) {
   const t = useTranslations("checklist");
   const tResult = useTranslations("equipment.result");
@@ -231,7 +233,7 @@ export function ChecklistForm({
 
       <button
         type="button"
-        disabled={isPending}
+        disabled={isPending || !hasSignature}
         onClick={handleSubmit}
         className="rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground disabled:opacity-60"
       >

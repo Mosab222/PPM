@@ -18,7 +18,8 @@
   "nav": {
     "login": "Log in",
     "dashboard": "Dashboard",
-    "myHistory": "My history"
+    "myHistory": "My history",
+    "account": "Account"
   },
   "language": {
     "switchTo": "العربية",
@@ -78,11 +79,31 @@
     },
     "banner": {
       "passed": "Maintenance recorded successfully — all checks passed.",
-      "needsAttention": "Maintenance recorded — {count} issue(s) need attention."
+      "needsAttention": "Maintenance recorded — {count} issue(s) need attention.",
+      "signatureWarning": "Your maintenance was recorded, but your signature could not be attached this time. Contact an admin if this keeps happening."
     }
   },
   "footer": {
     "publicNotice": "Public equipment record — no login required to view."
+  },
+  "account": {
+    "title": "My Account",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "adminNoSignature": "Admins don't sign maintenance logs, so no signature is needed here.",
+    "signature": {
+      "title": "Signature",
+      "hint": "This appears on printed maintenance forms whenever you sign something -- evaluating, approving, or submitting a checklist.",
+      "drawHint": "Draw with your mouse, finger, or stylus.",
+      "clear": "Clear",
+      "save": "Save signature",
+      "saving": "Saving…",
+      "redraw": "Redraw signature",
+      "uploadError": "Couldn't upload your signature. Please try again.",
+      "saveError": "Couldn't save your signature. Please try again.",
+      "unauthorized": "You must be logged in to do this."
+    }
   },
   "auth": {
     "title": "Technician login",
@@ -114,6 +135,9 @@
     "validationError": "Please answer all required items before submitting.",
     "submitError": "Something went wrong while submitting. Please try again.",
     "unauthorized": "You must be logged in as an active technician to submit maintenance.",
+    "noSignature": "You need to draw a signature before you can submit maintenance.",
+    "signatureRequired": "You need to draw a signature before you can submit maintenance.",
+    "goToAccount": "Go to your account to draw one",
     "numberPlaceholder": "Enter value",
     "didItPass": "Did this pass?",
     "photo": {
@@ -635,6 +659,8 @@
     },
     "empty": "Nothing is waiting for your decision right now.",
     "selectAll": "Select all",
+    "signatureRequired": "You need to draw a signature before you can approve or reject.",
+    "goToAccount": "Go to your account to draw one",
     "approve": "Approve",
     "reject": "Reject",
     "processing": "Processing…",
@@ -659,7 +685,9 @@
       "unauthorized": "You're not authorized to make this decision.",
       "missingReason": "Please enter a rejection reason.",
       "dbRejected": "The server rejected this change: {detail}",
-      "someAlreadyDecided": "{succeeded} log(s) were updated, but {lost} were already decided by someone else and were skipped."
+      "someAlreadyDecided": "{succeeded} log(s) were updated, but {lost} were already decided by someone else and were skipped.",
+      "noSignature": "You need to draw a signature before you can approve or reject.",
+      "signatureWarning": "Your decision was recorded, but your signature could not be attached this time."
     },
     "detail": {
       "backToQueue": "Back to queue",

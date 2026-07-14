@@ -40,6 +40,9 @@ type MaintenanceLogRow = {
   manager_user_id: string | null;
   rejected_by_role: string | null;
   rejection_reason: string | null;
+  technician_signature_url: string | null;
+  head_signature_url: string | null;
+  manager_signature_url: string | null;
 };
 
 type ApproverRow = { id: string; full_name: string | null; arabic_name: string | null };
@@ -159,7 +162,7 @@ export default async function InspectionFormReportPage({
   let logQuery = supabase
     .from("maintenance_logs")
     .select(
-      "id, equipment_id, checklist_template_id, work_order_number, maintenance_date, maintenance_time, technician_name, approval_status, head_user_id, manager_user_id, rejected_by_role, rejection_reason"
+      "id, equipment_id, checklist_template_id, work_order_number, maintenance_date, maintenance_time, technician_name, approval_status, head_user_id, manager_user_id, rejected_by_role, rejection_reason, technician_signature_url, head_signature_url, manager_signature_url"
     )
     .eq("status", "completed")
     .eq("deleted", false)
@@ -268,10 +271,13 @@ export default async function InspectionFormReportPage({
       // evaluated this," not "this passed." "Approved by" is stricter: it
       // only fills in on true final approval, never on rejection.
       evaluatedByName: log.head_user_id ? approverNameById.get(log.head_user_id) ?? null : null,
+      evaluatedBySignatureUrl: log.head_user_id ? log.head_signature_url : null,
       approvedByName:
         log.approval_status === "approved" && log.manager_user_id
           ? approverNameById.get(log.manager_user_id) ?? null
           : null,
+      approvedBySignatureUrl:
+        log.approval_status === "approved" && log.manager_user_id ? log.manager_signature_url : null,
     }));
 
   const [{ data: types }, { data: subtypes }, { data: floorRows }, { data: areaRows }] = await filterListsPromise;
@@ -456,15 +462,45 @@ export default async function InspectionFormReportPage({
                 <div dir="ltr" className="mt-2 grid grid-cols-3 gap-3 text-center text-[10px]">
                   <div className="rounded-md border border-border p-2">
                     <p className="font-medium">{t("signatures.inspectedBy")}</p>
-                    <p className="mt-5 border-t border-border pt-1">{form.log.technician_name ?? "—"}</p>
+                    {form.log.technician_signature_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={form.log.technician_signature_url}
+                        alt=""
+                        className="mx-auto mt-1 h-[13mm] object-contain"
+                      />
+                    ) : (
+                      <div className="mt-1 h-[13mm]" />
+                    )}
+                    <p className="border-t border-border pt-1">{form.log.technician_name ?? "—"}</p>
                   </div>
                   <div className="rounded-md border border-border p-2">
                     <p className="font-medium">{t("signatures.evaluatedBy")}</p>
-                    <p className="mt-5 border-t border-border pt-1">{form.evaluatedByName || " "}</p>
+                    {form.evaluatedBySignatureUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={form.evaluatedBySignatureUrl}
+                        alt=""
+                        className="mx-auto mt-1 h-[13mm] object-contain"
+                      />
+                    ) : (
+                      <div className="mt-1 h-[13mm]" />
+                    )}
+                    <p className="border-t border-border pt-1">{form.evaluatedByName || " "}</p>
                   </div>
                   <div className="rounded-md border border-border p-2">
                     <p className="font-medium">{t("signatures.approvedBy")}</p>
-                    <p className="mt-5 border-t border-border pt-1">{form.approvedByName || " "}</p>
+                    {form.approvedBySignatureUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={form.approvedBySignatureUrl}
+                        alt=""
+                        className="mx-auto mt-1 h-[13mm] object-contain"
+                      />
+                    ) : (
+                      <div className="mt-1 h-[13mm]" />
+                    )}
+                    <p className="border-t border-border pt-1">{form.approvedByName || " "}</p>
                   </div>
                 </div>
               </div>

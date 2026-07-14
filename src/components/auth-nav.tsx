@@ -35,6 +35,14 @@ export async function AuthNav({
       <span className="text-muted">
         {tAuth("loggedInAs")} <span className="font-medium text-foreground">{displayName}</span>
       </span>
+      {user.role !== "admin" && (
+        <Link
+          href="/account"
+          className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-background"
+        >
+          {tNav("account")}
+        </Link>
+      )}
       <form action={logout.bind(null, locale)}>
         <button
           type="submit"

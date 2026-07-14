@@ -65,10 +65,16 @@ export default async function EquipmentPublicPage({
   searchParams,
 }: {
   params: Promise<{ locale: string; id: string }>;
-  searchParams: Promise<{ submitted?: string; result?: string; issues?: string; returnTo?: string }>;
+  searchParams: Promise<{
+    submitted?: string;
+    result?: string;
+    issues?: string;
+    signatureWarning?: string;
+    returnTo?: string;
+  }>;
 }) {
   const { locale, id } = await params;
-  const { submitted, result: submittedResult, issues, returnTo } = await searchParams;
+  const { submitted, result: submittedResult, issues, signatureWarning, returnTo } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("equipment");
   const tFooter = await getTranslations("footer");
@@ -157,6 +163,12 @@ export default async function EquipmentPublicPage({
           {submittedResult === "passed"
             ? t("banner.passed")
             : t("banner.needsAttention", { count: issuesCount })}
+        </div>
+      )}
+
+      {submitted === "1" && signatureWarning === "1" && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-center text-sm text-amber-800">
+          {t("banner.signatureWarning")}
         </div>
       )}
 

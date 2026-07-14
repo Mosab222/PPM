@@ -8,6 +8,8 @@ export type AppUser = {
   arabic_name: string | null;
   role: "admin" | "technician" | "head" | "manager";
   is_active: boolean;
+  signature_url: string | null;
+  signature_storage_path: string | null;
 };
 
 // Reads the authenticated Supabase user (if any) and joins it with the
@@ -28,7 +30,7 @@ export const getCurrentUser = cache(async (): Promise<AppUser | null> => {
 
   const { data } = await supabase
     .from("users")
-    .select("id, email, full_name, arabic_name, role, is_active")
+    .select("id, email, full_name, arabic_name, role, is_active, signature_url, signature_storage_path")
     .eq("id", user.id)
     .single();
 
