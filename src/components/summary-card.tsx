@@ -5,7 +5,7 @@ export function SummaryCard({
 }: {
   label: string;
   value: string;
-  color?: "green" | "amber" | "red" | "blue";
+  color?: "green" | "amber" | "red" | "blue" | "orange";
 }) {
   const colorClass =
     color === "green"
@@ -16,7 +16,9 @@ export function SummaryCard({
           ? "text-red-700"
           : color === "blue"
             ? "text-blue-700"
-            : "text-foreground";
+            : color === "orange"
+              ? "text-orange-700"
+              : "text-foreground";
 
   return (
     <div className="rounded-lg border border-border bg-card p-4">

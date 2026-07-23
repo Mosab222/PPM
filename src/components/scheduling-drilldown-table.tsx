@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { formatMonthYear, formatNumber } from "@/lib/format";
 import { SchedulingStatusBadge } from "@/components/scheduling-status-badge";
 import type { DrilldownEquipmentRow } from "@/app/[locale]/admin/dashboard/actions";
-import type { SchedulingBucket } from "@/lib/scheduling";
+import type { PeriodBucket } from "@/lib/period";
 
 export function SchedulingDrilldownTable({
   label,
@@ -17,7 +17,7 @@ export function SchedulingDrilldownTable({
   onClose,
 }: {
   label: string;
-  bucket: SchedulingBucket;
+  bucket: PeriodBucket;
   rows: DrilldownEquipmentRow[] | null;
   loading: boolean;
   error: boolean;

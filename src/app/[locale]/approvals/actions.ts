@@ -17,7 +17,8 @@ export type ApprovalActionResult = {
 async function writeDecision(
   logIds: string[],
   decision: "approve" | "reject",
-  reason?: string
+  reason?: string,
+  note?: string
 ): Promise<ApprovalActionResult> {
   const user = await getCurrentUser();
   if (!user || (user.role !== "head" && user.role !== "manager")) {
@@ -38,11 +39,23 @@ async function writeDecision(
   const signatureField = isHead ? "head_signature_url" : "manager_signature_url";
   const nowIso = new Date().toISOString();
 
+  const trimmedNote = note?.trim() || undefined;
+
   const basePayload =
     decision === "approve"
       ? isHead
-        ? { approval_status: "pending_manager", head_user_id: user.id, head_decision_at: nowIso }
-        : { approval_status: "approved", manager_user_id: user.id, manager_decision_at: nowIso }
+        ? {
+            approval_status: "pending_manager",
+            head_user_id: user.id,
+            head_decision_at: nowIso,
+            ...(trimmedNote ? { late_approval_note: trimmedNote } : {}),
+          }
+        : {
+            approval_status: "approved",
+            manager_user_id: user.id,
+            manager_decision_at: nowIso,
+            ...(trimmedNote ? { late_approval_note: trimmedNote } : {}),
+          }
       : isHead
         ? {
             approval_status: "rejected",
@@ -124,8 +137,8 @@ async function writeDecision(
   return { successCount: succeededIds.length, signatureWarning };
 }
 
-export async function approveLogs(logIds: string[]): Promise<ApprovalActionResult> {
-  return writeDecision(logIds, "approve");
+export async function approveLogs(logIds: string[], note?: string): Promise<ApprovalActionResult> {
+  return writeDecision(logIds, "approve", undefined, note);
 }
 
 export async function rejectLogs(logIds: string[], reason: string): Promise<ApprovalActionResult> {

@@ -16,6 +16,7 @@ export type QueueRow = {
   roomCode: string | null;
   technicianName: string | null;
   maintenanceDate: string | null;
+  isLate: boolean;
   result: string | null;
   issuesFound: number;
 };
@@ -49,9 +50,14 @@ export function ApprovalQueueTable({
     return <p className="rounded-lg border border-border bg-card p-6 text-center text-muted">{t("empty")}</p>;
   }
 
+  const selectedRows = rows.filter((r) => selected.has(r.id));
+  const allowReject = selectedRows.every((r) => !r.isLate);
+
   return (
     <div className="flex flex-col gap-3">
-      {canAct && <ApprovalActions logIds={Array.from(selected)} onAfterAction="refresh" />}
+      {canAct && (
+        <ApprovalActions logIds={Array.from(selected)} onAfterAction="refresh" allowReject={allowReject} />
+      )}
 
       <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <table className="w-full text-start text-sm">
@@ -96,7 +102,14 @@ export function ApprovalQueueTable({
                   {[row.floor, row.zone, row.roomCode].filter(Boolean).join(" / ") || "—"}
                 </td>
                 <td className="px-3 py-2">{row.technicianName ?? "—"}</td>
-                <td className="px-3 py-2">{formatDate(row.maintenanceDate, locale)}</td>
+                <td className="px-3 py-2">
+                  {formatDate(row.maintenanceDate, locale)}
+                  {row.isLate && (
+                    <span className="ms-2 inline-block rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800">
+                      {t("late")}
+                    </span>
+                  )}
+                </td>
                 <td className="px-3 py-2">{row.result ? <ResultBadge result={row.result} /> : "—"}</td>
                 <td className="px-3 py-2">{row.issuesFound}</td>
                 <td className="px-3 py-2">

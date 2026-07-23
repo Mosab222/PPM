@@ -67,11 +67,13 @@
       "decommissioned": "Decommissioned"
     },
     "scheduling_status_value": {
-      "done": "Completed",
+      "completed": "Completed",
       "scheduled": "Scheduled",
-      "pending_approval": "Pending Approval",
+      "executed_not_verified": "Executed — Not Verified",
+      "needs_redo": "Needs Redo",
       "overdue": "Overdue"
     },
+    "overdueSinceNote": "Overdue since {month}",
     "operational_status_value": {
       "healthy": "Healthy",
       "needs_attention": "Needs Attention",
@@ -332,18 +334,24 @@
         "total": "Total equipment",
         "completed": "Completed",
         "scheduled": "Scheduled",
-        "pendingApproval": "Pending Approval",
-        "overdue": "Overdue"
+        "executedNotVerified": "Executed — Not Verified",
+        "needsRedo": "Needs Redo",
+        "overdue": "Overdue",
+        "complianceRate": "Compliance Rate",
+        "overallRate": "Overall Compliance Rate"
       },
       "chart": {
         "title": "Maintenance scheduling",
         "byAreaIn": "Areas on {floor}",
         "backToFloors": "← Back to all floors",
-        "done": "Completed",
+        "completed": "Completed",
         "scheduled": "Scheduled",
-        "pending_approval": "Pending Approval",
+        "executed_not_verified": "Executed — Not Verified",
+        "needs_redo": "Needs Redo",
         "overdue": "Overdue",
         "empty": "No equipment matches the current filters.",
+        "trendTitle": "Compliance rate over time",
+        "complianceRate": "Compliance rate",
         "drilldown": {
           "heading": "{status} — {label} ({count})",
           "close": "Close",
@@ -368,6 +376,8 @@
         "floor": "Floor",
         "area": "Area",
         "status": "Scheduling status",
+        "period": "Period",
+        "allPeriods": "All periods",
         "allFacilities": "All facilities",
         "allTypes": "All types",
         "allSubtypes": "All subtypes",
@@ -680,6 +690,9 @@
     "approve": "Approve",
     "reject": "Reject",
     "processing": "Processing…",
+    "late": "Late",
+    "lateApprovalOnly": "This period has closed. It can only be approved, not rejected — an optional note can explain any concern.",
+    "lateApprovalNotePlaceholder": "Optional note about this late approval…",
     "table": {
       "equipment": "Equipment",
       "typeSubtype": "Type / Subtype",

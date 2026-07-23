@@ -7,6 +7,7 @@ import { BackButton } from "@/components/back-button";
 import { ResultBadge } from "@/components/result-badge";
 import { ApprovalActions } from "@/components/approval-actions";
 import { formatDate, formatTime } from "@/lib/format";
+import { isDateInClosedPeriod } from "@/lib/period";
 
 type LogDetail = {
   id: string;
@@ -101,14 +102,17 @@ export default async function ApprovalDetailPage({
     (user.role === "head" && log.approval_status === "pending_head") ||
     (user.role === "manager" && log.approval_status === "pending_manager");
   const hasSignature = Boolean(user.signature_url);
-  const canAct = stageMatches && hasSignature;
+  const isLate = log.maintenance_date ? isDateInClosedPeriod(log.maintenance_date) : false;
 
   const [{ data: equipment }, { data: items }, { data: responses }, { data: photos }] = await Promise.all([
+    // Deleted equipment's pending logs have no reason to be actionable --
+    // there's no point approving maintenance on a unit no longer tracked.
     supabase
       .from("equipment")
       .select("id, code, type_code, subtype_code, floor, zone, room_code, room_name")
       .eq("id", log.equipment_id)
-      .single<EquipmentLookup>(),
+      .eq("deleted", false)
+      .maybeSingle<EquipmentLookup>(),
     supabase
       .from("checklist_items")
       .select("id, question, arabic_question, item_type, is_required, is_critical, display_order")
@@ -127,6 +131,8 @@ export default async function ApprovalDetailPage({
       .order("created_at", { ascending: true })
       .returns<PhotoRow[]>(),
   ]);
+
+  const canAct = stageMatches && hasSignature && Boolean(equipment);
 
   const responseMap = new Map((responses ?? []).map((r) => [r.checklist_item_id, r]));
   const rows = (items ?? [])
@@ -220,7 +226,7 @@ export default async function ApprovalDetailPage({
       </div>
 
       {canAct ? (
-        <ApprovalActions logIds={[log.id]} onAfterAction="navigateToQueue" />
+        <ApprovalActions logIds={[log.id]} onAfterAction="navigateToQueue" allowReject={!isLate} />
       ) : user.role === "admin" ? (
         <p className="text-sm text-muted">{t("detail.readOnlyAdmin")}</p>
       ) : stageMatches && !hasSignature ? (

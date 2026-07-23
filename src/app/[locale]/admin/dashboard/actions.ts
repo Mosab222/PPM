@@ -2,7 +2,12 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/auth";
-import { classifySchedulingStatus, monthKey, previousMonthKey, type SchedulingBucket } from "@/lib/scheduling";
+import {
+  classifyPeriodStatus,
+  derivePeriod,
+  equipmentExistedBy,
+  type PeriodBucket,
+} from "@/lib/period";
 
 type EquipmentRow = {
   id: string;
@@ -13,7 +18,7 @@ type EquipmentRow = {
   room_code: string | null;
   next_maintenance_date: string | null;
   created_at: string;
-  maintenance_frequency: string | null;
+  deleted: boolean;
 };
 
 type MaintenanceLogRow = {
@@ -22,22 +27,8 @@ type MaintenanceLogRow = {
   approval_status: string;
 };
 
-type PendingLogRow = {
-  equipment_id: string;
-};
-
-type EquipmentType = {
-  id: string;
-  name: string;
-  arabic_name: string | null;
-};
-
-type EquipmentSubtype = {
-  code: string;
-  parent_type_id: string;
-  name: string;
-  arabic_name: string | null;
-};
+type EquipmentType = { id: string; name: string; arabic_name: string | null };
+type EquipmentSubtype = { code: string; parent_type_id: string; name: string; arabic_name: string | null };
 
 export type DrilldownEquipmentRow = {
   id: string;
@@ -47,31 +38,38 @@ export type DrilldownEquipmentRow = {
   zone: string | null;
   room_code: string | null;
   next_maintenance_date: string | null;
-  bucket: SchedulingBucket;
+  bucket: PeriodBucket;
 };
 
-export type FetchSchedulingBucketResult = { rows: DrilldownEquipmentRow[] } | { error: string };
+export type FetchPeriodBucketResult = { rows: DrilldownEquipmentRow[] } | { error: string };
 
-export async function fetchSchedulingBucketEquipment(input: {
+const NOTHING_HAPPENED_BUCKETS: PeriodBucket[] = ["scheduled", "needs_redo", "overdue"];
+
+export async function fetchPeriodBucketEquipment(input: {
   facility?: string;
   type?: string;
   subtype?: string;
   floor?: string;
   area?: string;
-  bucket: SchedulingBucket;
+  bucket: PeriodBucket;
+  periodKey: string;
   locale: string;
-}): Promise<FetchSchedulingBucketResult> {
+}): Promise<FetchPeriodBucketResult> {
   const user = await getCurrentUser();
   if (!user || user.role !== "admin") {
     return { error: "unauthorized" };
   }
 
   const supabase = await createClient();
+  const period = derivePeriod(input.periodKey);
 
+  // Deliberately NOT filtered by deleted=false -- deleted equipment still
+  // appears here for periods where it genuinely completed or executed-but-
+  // unverified ("history isn't revised"). The omission for "would show as
+  // scheduled/needs_redo/overdue" happens after classification below.
   let query = supabase
     .from("equipment")
-    .select("id, code, subtype_code, floor, zone, room_code, next_maintenance_date, created_at, maintenance_frequency")
-    .eq("deleted", false);
+    .select("id, code, subtype_code, floor, zone, room_code, next_maintenance_date, created_at, deleted");
 
   if (input.facility) query = query.eq("facility_code", input.facility);
   if (input.type) query = query.eq("type_code", input.type);
@@ -84,33 +82,23 @@ export async function fetchSchedulingBucketEquipment(input: {
     return { error: "fetchError" };
   }
 
-  const equipmentRows = equipment ?? [];
+  const equipmentRows = (equipment ?? []).filter((row) => equipmentExistedBy(row, period));
   if (equipmentRows.length === 0) {
     return { rows: [] };
   }
 
   const equipmentIds = equipmentRows.map((e) => e.id);
-  const todayIso = new Date().toISOString();
-  const currentMonth = monthKey(todayIso);
-  const previousMonth = previousMonthKey(currentMonth);
-  const previousMonthStartIso = `${previousMonth}-01`;
 
-  const [{ data: logs }, { data: pendingLogs }, { data: types }, { data: subtypes }] = await Promise.all([
+  const [{ data: logs }, { data: types }, { data: subtypes }] = await Promise.all([
     supabase
       .from("maintenance_logs")
       .select("equipment_id, maintenance_date, approval_status")
       .eq("status", "completed")
       .eq("deleted", false)
-      .gte("maintenance_date", previousMonthStartIso)
+      .gte("maintenance_date", period.startDate)
+      .lte("maintenance_date", period.endDate)
       .in("equipment_id", equipmentIds)
       .returns<MaintenanceLogRow[]>(),
-    supabase
-      .from("maintenance_logs")
-      .select("equipment_id")
-      .in("approval_status", ["pending_head", "pending_manager"])
-      .eq("deleted", false)
-      .in("equipment_id", equipmentIds)
-      .returns<PendingLogRow[]>(),
     supabase.from("equipment_types").select("id, name, arabic_name").eq("active", true).returns<EquipmentType[]>(),
     supabase
       .from("equipment_subtypes")
@@ -119,15 +107,12 @@ export async function fetchSchedulingBucketEquipment(input: {
       .returns<EquipmentSubtype[]>(),
   ]);
 
-  const currentMonthApproved = new Set<string>();
-  const previousMonthApproved = new Set<string>();
+  const logsByEquipment = new Map<string, MaintenanceLogRow[]>();
   for (const log of logs ?? []) {
-    if (log.approval_status !== "approved") continue;
-    const logMonth = monthKey(log.maintenance_date);
-    if (logMonth === currentMonth) currentMonthApproved.add(log.equipment_id);
-    else if (logMonth === previousMonth) previousMonthApproved.add(log.equipment_id);
+    const list = logsByEquipment.get(log.equipment_id) ?? [];
+    list.push(log);
+    logsByEquipment.set(log.equipment_id, list);
   }
-  const pendingApproval = new Set((pendingLogs ?? []).map((l) => l.equipment_id));
 
   const typesById = new Map((types ?? []).map((t) => [t.id, t]));
   const subtypeLabels = new Map(
@@ -141,6 +126,15 @@ export async function fetchSchedulingBucketEquipment(input: {
 
   const rows: DrilldownEquipmentRow[] = equipmentRows
     .map((row) => ({
+      row,
+      bucket: classifyPeriodStatus(period, logsByEquipment.get(row.id) ?? []),
+    }))
+    .filter(({ bucket, row }) => {
+      if (bucket !== input.bucket) return false;
+      if (row.deleted && NOTHING_HAPPENED_BUCKETS.includes(bucket)) return false;
+      return true;
+    })
+    .map(({ row, bucket }) => ({
       id: row.id,
       code: row.code,
       subtypeLabel: subtypeLabels.get(row.subtype_code) ?? row.subtype_code,
@@ -148,16 +142,8 @@ export async function fetchSchedulingBucketEquipment(input: {
       zone: row.zone,
       room_code: row.room_code,
       next_maintenance_date: row.next_maintenance_date,
-      bucket: classifySchedulingStatus({
-        frequency: row.maintenance_frequency,
-        createdAt: row.created_at,
-        hasCurrentMonthApproval: currentMonthApproved.has(row.id),
-        hasPreviousMonthApproval: previousMonthApproved.has(row.id),
-        hasPendingApproval: pendingApproval.has(row.id),
-        todayIso,
-      }),
+      bucket,
     }))
-    .filter((row) => row.bucket === input.bucket)
     .sort((a, b) => a.code.localeCompare(b.code));
 
   return { rows };

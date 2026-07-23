@@ -28,9 +28,10 @@ export function formatTime(value: string | null, locale: string) {
   }).format(date);
 }
 
-// Same UTC-parse convention as formatDate, but month-precision only -- for
-// next_maintenance_date, whose underlying scheduling logic (classifySchedulingStatus)
-// only ever enforces a calendar month, never a specific day.
+// Same UTC-parse convention as formatDate, but month-precision only -- used
+// for next_maintenance_date (informational only) and for period labels
+// (whose underlying classification, classifyPeriodStatus, only ever
+// enforces a calendar month, never a specific day).
 export function formatMonthYear(value: string | null, locale: string) {
   if (!value) return "—";
   return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-GB", {

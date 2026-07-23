@@ -8,14 +8,17 @@ import { approveLogs, rejectLogs, type ApprovalActionResult } from "@/app/[local
 export function ApprovalActions({
   logIds,
   onAfterAction,
+  allowReject = true,
 }: {
   logIds: string[];
   onAfterAction: "refresh" | "navigateToQueue";
+  allowReject?: boolean;
 }) {
   const t = useTranslations("approvals");
   const router = useRouter();
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [reason, setReason] = useState("");
+  const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -24,6 +27,7 @@ export function ApprovalActions({
   function afterSuccess() {
     setShowRejectModal(false);
     setReason("");
+    setNote("");
     if (onAfterAction === "navigateToQueue") {
       router.push("/approvals");
     } else {
@@ -61,7 +65,7 @@ export function ApprovalActions({
   function handleApprove() {
     setError(null);
     startTransition(async () => {
-      const result = await approveLogs(logIds);
+      const result = await approveLogs(logIds, note.trim() || undefined);
       handleResult(result);
     });
   }
@@ -81,6 +85,18 @@ export function ApprovalActions({
   return (
     <div className="flex flex-col gap-2">
       {error && <p className="text-sm text-red-700">{error}</p>}
+      {!allowReject && (
+        <p className="text-sm text-amber-800">{t("lateApprovalOnly")}</p>
+      )}
+      {!allowReject && (
+        <textarea
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          rows={2}
+          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+          placeholder={t("lateApprovalNotePlaceholder")}
+        />
+      )}
       <div className="flex gap-2">
         <button
           type="button"
@@ -90,14 +106,16 @@ export function ApprovalActions({
         >
           {isPending ? t("processing") : t("approve")}
         </button>
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => setShowRejectModal(true)}
-          className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-        >
-          {t("reject")}
-        </button>
+        {allowReject && (
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => setShowRejectModal(true)}
+            className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+          >
+            {t("reject")}
+          </button>
+        )}
       </div>
 
       {showRejectModal && (

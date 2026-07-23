@@ -7,7 +7,8 @@ import { ResultBadge } from "@/components/result-badge";
 import { SchedulingStatusBadge } from "@/components/scheduling-status-badge";
 import { OperationalStatusBadge } from "@/components/operational-status-badge";
 import { Link } from "@/i18n/navigation";
-import { classifySchedulingStatus, monthKey, previousMonthKey } from "@/lib/scheduling";
+import { classifyPeriodStatus, currentPeriodKey, getDuePeriods } from "@/lib/period";
+import { riyadhMonthKey } from "@/lib/timezone";
 import { classifyOperationalStatus } from "@/lib/operational-status";
 import { isUuid } from "@/lib/is-uuid";
 
@@ -100,29 +101,44 @@ export default async function EquipmentPublicPage({
   const user = await getCurrentUser();
   const canExecuteMaintenance = Boolean(user && user.is_active);
 
-  const todayIso = new Date().toISOString();
-  const currentMonth = monthKey(todayIso);
-  const previousMonth = previousMonthKey(currentMonth);
-
   // rows[0] is just whatever log is newest -- it could be pending or
   // rejected, not necessarily approved -- so scheduling/operational status
   // must scan the full history rather than trusting rows[0] directly. `rows`
   // is already ordered newest-first by the query, so filtering preserves order.
   const approvedRows = rows.filter((row) => row.approval_status === "approved" && row.maintenance_date !== null);
-  const hasPendingApproval = rows.some(
-    (row) => row.approval_status === "pending_head" || row.approval_status === "pending_manager"
-  );
   const latestApproved = approvedRows[0];
-  const latestApprovedMonth = latestApproved?.maintenance_date ? monthKey(latestApproved.maintenance_date) : null;
 
-  const schedulingBucket = classifySchedulingStatus({
-    frequency: equipment.maintenance_frequency,
-    createdAt: equipment.created_at,
-    hasCurrentMonthApproval: latestApprovedMonth === currentMonth,
-    hasPreviousMonthApproval: latestApprovedMonth === previousMonth,
-    hasPendingApproval,
-    todayIso,
-  });
+  // This page answers a different question than the dashboard: not "how did
+  // we perform in period X" but "what is the state of THIS unit right now."
+  // The honest answer to that includes unresolved history -- so the badge
+  // shows the current period's status, EXCEPT that if any CLOSED period is
+  // still overdue, it shows Overdue (with the oldest such period named, so
+  // the badge explains itself rather than just being an unexplained red tag).
+  const logsForClassification = history
+    .filter((row) => row.approval_status !== null)
+    .map((row) => ({
+      maintenance_date: row.maintenance_date as string,
+      approval_status: row.approval_status as string,
+    }));
+
+  const currentKey = currentPeriodKey();
+  const createdKey = riyadhMonthKey(equipment.created_at);
+  const allPeriods = getDuePeriods(equipment, { fromKey: createdKey, toKey: currentKey });
+  const currentPeriodEntry = allPeriods.find((p) => p.isCurrent);
+  const closedPeriods = allPeriods.filter((p) => !p.isCurrent);
+
+  const currentBucket = currentPeriodEntry
+    ? classifyPeriodStatus(currentPeriodEntry, logsForClassification)
+    : "scheduled";
+
+  // allPeriods is chronological ascending (listMonthKeys), so the first
+  // closed-and-overdue entry found is the oldest -- how long this has been a
+  // problem, not just whether it currently is one.
+  const oldestOverduePeriod = closedPeriods.find(
+    (p) => classifyPeriodStatus(p, logsForClassification) === "overdue"
+  );
+
+  const schedulingBucket = oldestOverduePeriod ? "overdue" : currentBucket;
 
   const operationalStatus = classifyOperationalStatus({
     manualOverride: equipment.manual_operational_override,
@@ -187,6 +203,11 @@ export default async function EquipmentPublicPage({
             <OperationalStatusBadge status={operationalStatus} />
           </div>
         </div>
+        {oldestOverduePeriod && (
+          <p className="mt-2 text-xs font-medium text-red-700">
+            {t("overdueSinceNote", { month: formatMonthYear(`${oldestOverduePeriod.key}-01`, locale) })}
+          </p>
+        )}
         {canExecuteMaintenance && (
           <Link
             href={`/eq/${equipment.equipment_id}/execute${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}

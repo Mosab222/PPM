@@ -14,26 +14,28 @@ import {
 } from "recharts";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import type { SchedulingChartDatum, SchedulingBucket } from "@/lib/scheduling";
-import { fetchSchedulingBucketEquipment, type DrilldownEquipmentRow } from "@/app/[locale]/admin/dashboard/actions";
+import type { PeriodChartDatum, PeriodBucket } from "@/lib/period";
+import { currentPeriodKey } from "@/lib/period";
+import { fetchPeriodBucketEquipment, type DrilldownEquipmentRow } from "@/app/[locale]/admin/dashboard/actions";
 import { SchedulingDrilldownTable } from "@/components/scheduling-drilldown-table";
 
-const COLORS = { done: "#16a34a", scheduled: "#d97706", pending_approval: "#2563eb", overdue: "#dc2626" };
-
-const LEGEND_KEYS: Record<string, "done" | "scheduled" | "pending_approval" | "overdue"> = {
-  done: "done",
-  scheduled: "scheduled",
-  pending_approval: "pending_approval",
-  overdue: "overdue",
+const COLORS: Record<PeriodBucket, string> = {
+  completed: "#16a34a",
+  scheduled: "#d97706",
+  executed_not_verified: "#2563eb",
+  needs_redo: "#ea580c",
+  overdue: "#dc2626",
 };
 
-type Selection = { label: string; bucket: SchedulingBucket };
+const BUCKET_KEYS: PeriodBucket[] = ["completed", "executed_not_verified", "needs_redo", "scheduled", "overdue"];
+
+type Selection = { label: string; bucket: PeriodBucket };
 
 export function ComplianceChart({
   data,
   locale,
 }: {
-  data: SchedulingChartDatum[];
+  data: PeriodChartDatum[];
   locale: string;
 }) {
   const t = useTranslations("admin.dashboard.chart");
@@ -48,10 +50,10 @@ export function ComplianceChart({
   const formatNumber = (value: number) => numberFormatter.format(value);
 
   // recharts' onClick payload for a Bar segment merges the row's raw data
-  // in at the top level (label, done, scheduled, ...) rather than exposing
-  // which dataKey/series was clicked -- so the bucket has to come from the
-  // closure below (each Bar's own `key`), not from this argument.
-  async function handleBarClick(barData: unknown, bucket: SchedulingBucket) {
+  // in at the top level (label, completed, scheduled, ...) rather than
+  // exposing which dataKey/series was clicked -- so the bucket has to come
+  // from the closure below (each Bar's own `key`), not from this argument.
+  async function handleBarClick(barData: unknown, bucket: PeriodBucket) {
     const payload = barData as { payload?: { label?: string } };
     const label = payload?.payload?.label;
     if (!label) return;
@@ -67,14 +69,16 @@ export function ComplianceChart({
     // is currently showing, and has to map to the matching query field.
     const floorParam = searchParams.get("floor") ?? undefined;
     const isAreaView = Boolean(floorParam);
+    const periodKey = searchParams.get("period") ?? currentPeriodKey();
 
-    const result = await fetchSchedulingBucketEquipment({
+    const result = await fetchPeriodBucketEquipment({
       facility: searchParams.get("facility") ?? undefined,
       type: searchParams.get("type") ?? undefined,
       subtype: searchParams.get("subtype") ?? undefined,
       floor: isAreaView ? floorParam : label,
       area: isAreaView ? label : undefined,
       bucket,
+      periodKey,
       locale,
     });
 
@@ -94,8 +98,8 @@ export function ComplianceChart({
           <XAxis dataKey="label" tick={{ fontSize: 12 }} />
           <YAxis allowDecimals={false} tickFormatter={formatNumber} />
           <Tooltip formatter={(value) => formatNumber(Number(value))} />
-          <Legend formatter={(value: string) => t(LEGEND_KEYS[value] ?? "done")} />
-          {(["done", "scheduled", "pending_approval", "overdue"] as const).map((key) => (
+          <Legend formatter={(value: string) => t(value)} />
+          {BUCKET_KEYS.map((key) => (
             <Bar
               key={key}
               dataKey={key}

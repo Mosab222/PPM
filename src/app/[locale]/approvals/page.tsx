@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/supabase/auth";
 import { Link } from "@/i18n/navigation";
 import { BackButton } from "@/components/back-button";
 import { ApprovalQueueTable, type QueueRow } from "@/components/approval-queue-table";
+import { isDateInClosedPeriod } from "@/lib/period";
 
 type EquipmentLookup = {
   id: string;
@@ -55,11 +56,15 @@ async function fetchQueue(
   const logRows = logs ?? [];
   const equipmentIds = Array.from(new Set(logRows.map((l) => l.equipment_id)));
 
+  // Deleted equipment's pending logs disappear from the queue entirely --
+  // there's no point approving maintenance on a unit no longer tracked. The
+  // log itself just sits pending forever, invisible, harmless.
   const { data: equipmentRows } =
     equipmentIds.length > 0
       ? await supabase
           .from("equipment")
           .select("id, code, type_code, subtype_code, floor, zone, room_code")
+          .eq("deleted", false)
           .in("id", equipmentIds)
           .returns<EquipmentLookup[]>()
       : { data: [] as EquipmentLookup[] };
@@ -89,6 +94,7 @@ async function fetchQueue(
         roomCode: equipment.room_code,
         technicianName: log.technician_name,
         maintenanceDate: log.maintenance_date,
+        isLate: log.maintenance_date ? isDateInClosedPeriod(log.maintenance_date) : false,
         result: log.result,
         issuesFound: log.issues_found,
       };

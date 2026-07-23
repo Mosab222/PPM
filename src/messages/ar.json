@@ -67,11 +67,13 @@
       "decommissioned": "مسحوبة"
     },
     "scheduling_status_value": {
-      "done": "منجزة",
+      "completed": "منجزة",
       "scheduled": "مجدولة",
-      "pending_approval": "بانتظار الاعتماد",
+      "executed_not_verified": "منفذة — بانتظار الاعتماد",
+      "needs_redo": "تحتاج إعادة",
       "overdue": "متأخرة"
     },
+    "overdueSinceNote": "متأخرة منذ {month}",
     "operational_status_value": {
       "healthy": "جيدة",
       "needs_attention": "تحتاج متابعة",
@@ -332,18 +334,24 @@
         "total": "إجمالي المعدات",
         "completed": "منجزة",
         "scheduled": "مجدولة",
-        "pendingApproval": "بانتظار الاعتماد",
-        "overdue": "متأخرة"
+        "executedNotVerified": "منفذة — بانتظار الاعتماد",
+        "needsRedo": "تحتاج إعادة",
+        "overdue": "متأخرة",
+        "complianceRate": "معدل الالتزام",
+        "overallRate": "معدل الالتزام الإجمالي"
       },
       "chart": {
         "title": "جدولة الصيانة",
         "byAreaIn": "المناطق في الطابق {floor}",
         "backToFloors": "→ الرجوع إلى كل الطوابق",
-        "done": "منجزة",
+        "completed": "منجزة",
         "scheduled": "مجدولة",
-        "pending_approval": "بانتظار الاعتماد",
+        "executed_not_verified": "منفذة — بانتظار الاعتماد",
+        "needs_redo": "تحتاج إعادة",
         "overdue": "متأخرة",
         "empty": "لا توجد معدات مطابقة للمرشحات الحالية.",
+        "trendTitle": "معدل الالتزام عبر الزمن",
+        "complianceRate": "معدل الالتزام",
         "drilldown": {
           "heading": "{status} — {label} ({count})",
           "close": "إغلاق",
@@ -368,6 +376,8 @@
         "floor": "الطابق",
         "area": "المنطقة",
         "status": "حالة الجدولة",
+        "period": "الفترة",
+        "allPeriods": "كل الفترات",
         "allFacilities": "كل المنشآت",
         "allTypes": "كل الأنواع",
         "allSubtypes": "كل الأنواع الفرعية",
@@ -680,6 +690,9 @@
     "approve": "اعتماد",
     "reject": "رفض",
     "processing": "جارٍ المعالجة…",
+    "late": "متأخرة",
+    "lateApprovalOnly": "أُغلقت هذه الفترة. يمكن الاعتماد فقط، لا الرفض — يمكن إضافة ملاحظة اختيارية لتوضيح أي تحفظ.",
+    "lateApprovalNotePlaceholder": "ملاحظة اختيارية حول هذا الاعتماد المتأخر…",
     "table": {
       "equipment": "المعدة",
       "typeSubtype": "النوع / النوع الفرعي",
