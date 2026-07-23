@@ -343,7 +343,23 @@
         "scheduled": "Scheduled",
         "pending_approval": "Pending Approval",
         "overdue": "Overdue",
-        "empty": "No equipment matches the current filters."
+        "empty": "No equipment matches the current filters.",
+        "drilldown": {
+          "heading": "{status} — {label} ({count})",
+          "close": "Close",
+          "loading": "Loading equipment…",
+          "empty": "No equipment found for this selection.",
+          "error": "Couldn't load equipment. Try again.",
+          "table": {
+            "code": "Equipment code",
+            "type": "Type / Subtype",
+            "floor": "Floor",
+            "zone": "Zone",
+            "room": "Room",
+            "nextMaintenance": "Next maintenance",
+            "status": "Scheduling status"
+          }
+        }
       },
       "filters": {
         "facility": "Facility",

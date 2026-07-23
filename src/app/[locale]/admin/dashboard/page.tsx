@@ -297,7 +297,7 @@ export default async function DashboardPage({
           <p className="text-muted">{t("chart.empty")}</p>
         ) : (
           <Suspense>
-            <ComplianceChart data={chartData} locale={locale} drillable={!floor} />
+            <ComplianceChart data={chartData} locale={locale} />
           </Suspense>
         )}
       </div>
